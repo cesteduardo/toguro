@@ -437,8 +437,8 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 .rodape__redes { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
 .rodape__redes a { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .04); }
 .rodape__redes svg { width: 20px; height: 20px; }
-.rodape__aviso { margin: 26px auto 0; max-width: 520px; font-size: 13.5px; color: var(--soft); }
-.rodape__base { display: grid; gap: 8px; justify-items: center; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--soft); }
+.rodape__aviso { margin: 26px auto 0; max-width: 520px; font-size: 13.5px; color: var(--muted); }
+.rodape__base { display: grid; gap: 8px; justify-items: center; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
 .credito { font-family: "Inter", sans-serif; }
 .credito a { color: var(--ink); font-weight: 700; }
 
