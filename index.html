@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="pt-BR" class="sem-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Toguro · Empresas e marcas da Mansão Maromba</title>
+  <meta name="description" content="As empresas de Tiago Toguro: Mansão Maromba, Bebidas Mansão Maromba, Mansão Maromba Produções e Toguro Vestuário. Linha de bebidas e cadastro de distribuidores.">
+  <!-- PROPOSTA CONCEITUAL da GR Brands: fora dos buscadores até virar o site oficial -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#09090C">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/favicon-180.png">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Toguro · Empresas e marcas da Mansão Maromba">
+  <meta property="og:description" content="Conteúdo, bebidas, música e vestuário: as empresas nascidas da Mansão Maromba.">
+  <meta property="og:image" content="assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Mansão Maromba",
+    "foundingDate": "2019-10-15",
+    "logo": "assets/logo-mansao-branco.webp",
+    "founder": { "@type": "Person", "name": "Tiago Toguro", "alternateName": "Toguro" },
+    "subOrganization": [
+      { "@type": "Organization", "name": "Bebidas Mansão Maromba" },
+      { "@type": "Organization", "name": "Mansão Maromba Produções Artísticas" },
+      { "@type": "Organization", "name": "Toguro Comércio de Roupas" }
+    ],
+    "sameAs": [
+      "https://www.instagram.com/mansaomaromba/",
+      "https://www.youtube.com/@mansaomaromba"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="preload" as="image" href="assets/produtos/lata-original.webp">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      var h = document.documentElement, calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      h.classList.replace('sem-js', calmo ? 'js' : 'anim');
+      /* abertura do disco voador: uma vez por sessão. A capa preta segura a
+         página enquanto o Three.js chega; se não chegar em 2,5 s, sai. */
+      try {
+        if (!calmo && !sessionStorage.getItem('ovni-visto')) {
+          h.classList.add('abrindo');
+          setTimeout(function () { if (!window.__ovni) { h.classList.remove('abrindo'); window.__aberturaFim = true; } }, 2500);
+        } else { window.__aberturaFim = true; }
+      } catch (e) { window.__aberturaFim = true; }
+    })();
+  </script>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow-down" viewBox="0 0 256 256"><path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol><symbol id="i-arrow-up-right" viewBox="0 0 256 256"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></symbol><symbol id="i-barbell" viewBox="0 0 256 256"><path d="M248,120h-8V88a16,16,0,0,0-16-16H208V64a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v56H104V64A16,16,0,0,0,88,48H64A16,16,0,0,0,48,64v8H32A16,16,0,0,0,16,88v32H8a8,8,0,0,0,0,16h8v32a16,16,0,0,0,16,16H48v8a16,16,0,0,0,16,16H88a16,16,0,0,0,16-16V136h48v56a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16v-8h16a16,16,0,0,0,16-16V136h8a8,8,0,0,0,0-16ZM32,168V88H48v80Zm56,24H64V64H88V192Zm104,0H168V64h24V175.82c0,.06,0,.12,0,.18s0,.12,0,.18V192Zm32-24H208V88h16Z"/></symbol><symbol id="i-caret-left" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol><symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-instagram-logo" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"/></symbol><symbol id="i-lightning" viewBox="0 0 256 256"><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></symbol><symbol id="i-list" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"/></symbol><symbol id="i-microphone-stage" viewBox="0 0 256 256"><path d="M168,16A72.07,72.07,0,0,0,96,88a73.29,73.29,0,0,0,.63,9.42L27.12,192.22A15.93,15.93,0,0,0,28.71,213L43,227.29a15.93,15.93,0,0,0,20.78,1.59l94.81-69.53A73.29,73.29,0,0,0,168,160a72,72,0,1,0,0-144Zm56,72a55.72,55.72,0,0,1-11.16,33.52L134.49,43.16A56,56,0,0,1,224,88ZM54.32,216,40,201.68,102.14,117A72.37,72.37,0,0,0,139,153.86ZM112,88a55.67,55.67,0,0,1,11.16-33.51l78.34,78.34A56,56,0,0,1,112,88Zm-2.35,58.34a8,8,0,0,1,0,11.31l-8,8a8,8,0,1,1-11.31-11.31l8-8A8,8,0,0,1,109.67,146.33Z"/></symbol><symbol id="i-storefront" viewBox="0 0 256 256"><path d="M232,96a7.89,7.89,0,0,0-.3-2.2L217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.8A7.89,7.89,0,0,0,24,96h0v16a40,40,0,0,0,16,32v72a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V144a40,40,0,0,0,16-32V96ZM54,48H202l11.42,40H42.61Zm50,56h48v8a24,24,0,0,1-48,0Zm-16,0v8a24,24,0,0,1-35.12,21.26,7.88,7.88,0,0,0-1.82-1.06A24,24,0,0,1,40,112v-8ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm4.93-75.8a8.08,8.08,0,0,0-1.8,1.05A24,24,0,0,1,168,112v-8h48v8A24,24,0,0,1,204.93,132.2Z"/></symbol><symbol id="i-t-shirt" viewBox="0 0 256 256"><path d="M247.59,61.22,195.83,33A8,8,0,0,0,192,32H160a8,8,0,0,0-8,8,24,24,0,0,1-48,0,8,8,0,0,0-8-8H64a8,8,0,0,0-3.84,1L8.41,61.22A15.76,15.76,0,0,0,1.82,82.48l19.27,36.81A16.37,16.37,0,0,0,35.67,128H56v80a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V128h20.34a16.37,16.37,0,0,0,14.58-8.71l19.27-36.81A15.76,15.76,0,0,0,247.59,61.22ZM35.67,112a.62.62,0,0,1-.41-.13L16.09,75.26,56,53.48V112ZM184,208H72V48h16.8a40,40,0,0,0,78.38,0H184Zm36.75-96.14a.55.55,0,0,1-.41.14H200V53.48l39.92,21.78Z"/></symbol><symbol id="i-tiktok-logo" viewBox="0 0 256 256"><path d="M224,72a48.05,48.05,0,0,1-48-48,8,8,0,0,0-8-8H128a8,8,0,0,0-8,8V156a20,20,0,1,1-28.57-18.08A8,8,0,0,0,96,130.69V88a8,8,0,0,0-9.4-7.88C50.91,86.48,24,119.1,24,156a76,76,0,0,0,152,0V116.29A103.25,103.25,0,0,0,224,128a8,8,0,0,0,8-8V80A8,8,0,0,0,224,72Zm-8,39.64a87.19,87.19,0,0,1-43.33-16.15A8,8,0,0,0,160,102v54a60,60,0,0,1-120,0c0-25.9,16.64-49.13,40-57.6v27.67A36,36,0,1,0,136,156V32h24.5A64.14,64.14,0,0,0,216,87.5Z"/></symbol><symbol id="i-warning" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"/></symbol><symbol id="i-whatsapp-logo" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-youtube-logo" viewBox="0 0 256 256"><path d="M164.44,121.34l-48-32A8,8,0,0,0,104,96v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,145.05V111l25.58,17ZM234.33,69.52a24,24,0,0,0-14.49-16.4C185.56,39.88,131,40,128,40s-57.56-.12-91.84,13.12a24,24,0,0,0-14.49,16.4C19.08,79.5,16,97.74,16,128s3.08,48.5,5.67,58.48a24,24,0,0,0,14.49,16.41C69,215.56,120.4,216,127.34,216h1.32c6.94,0,58.37-.44,91.18-13.11a24,24,0,0,0,14.49-16.41c2.59-10,5.67-28.22,5.67-58.48S236.92,79.5,234.33,69.52Zm-15.49,113a8,8,0,0,1-4.77,5.49c-31.65,12.22-85.48,12-86,12H128c-.54,0-54.33.2-86-12a8,8,0,0,1-4.77-5.49C34.8,173.39,32,156.57,32,128s2.8-45.39,5.16-54.47A8,8,0,0,1,41.93,68c30.52-11.79,81.66-12,85.85-12h.27c.54,0,54.38-.18,86,12a8,8,0,0,1,4.77,5.49C221.2,82.61,224,99.43,224,128S221.2,173.39,218.84,182.47Z"/></symbol></svg>
+
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- Aviso da proposta: some quando o site virar oficial (apague este <p> e o noindex) -->
+  <p class="proposta">Proposta conceitual criada pela <a href="https://grbrands.com.br" target="_blank" rel="noopener">GR Brands<span class="ponto-gr">.</span></a><span class="proposta__mais"> Este não é o site oficial do Toguro.</span></p>
+
+  <div class="fundo" aria-hidden="true"><i class="fundo__luz fundo__luz--a"></i><i class="fundo__luz fundo__luz--b"></i></div>
+
+  <!-- ============ ILHA ============ -->
+  <header class="cab" id="cab">
+    <div class="cab__in" id="cabIn">
+      <a class="cab__marca" href="#inicio" aria-label="Toguro, início">Toguro<span>.</span></a>
+      <nav class="cab__nav" aria-label="Seções">
+        <a href="#empresas" data-secao="empresas">Empresas</a>
+        <a href="#historia" data-secao="historia">História</a>
+        <a href="#bebidas" data-secao="bebidas">Bebidas</a>
+        <a href="#mansao" data-secao="mansao">A Mansão</a>
+      </nav>
+      <a class="cab__cta btn btn--verde" href="#distribuidor">Seja distribuidor</a>
+      <button class="cab__burger" type="button" aria-label="Abrir menu" aria-haspopup="dialog" aria-controls="menuM"><svg><use href="#i-list"/></svg></button>
+    </div>
+  </header>
+
+  <dialog class="menu-m" id="menuM" aria-label="Menu">
+    <div class="menu-m__topo">
+      <span class="menu-m__marca">Toguro<span>.</span></span>
+      <button type="button" class="menu-m__x" data-fechar-menu aria-label="Fechar menu"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <nav class="menu-m__links" aria-label="Seções">
+      <a href="#empresas">Empresas</a>
+      <a href="#historia">História</a>
+      <a href="#bebidas">Bebidas</a>
+      <a href="#mansao">A Mansão</a>
+      <a href="#distribuidor" class="menu-m__cta">Seja distribuidor</a>
+    </nav>
+    <p class="menu-m__pe"><span>Navegação do site</span><span><kbd>Esc</kbd> fechar</span></p>
+  </dialog>
+
+  <main id="conteudo">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero cena" id="inicio" data-secao="inicio">
+      <h1 class="hero__titulo">
+        <span class="a"><span class="tl" data-texto="Do shape">Do shape</span></span>
+        <span class="a"><span class="tl tl--2" data-texto="ao império.">ao império.</span></span>
+      </h1>
+      <p class="hero__sub a">Conteúdo, bebidas, música e vestuário. As empresas de Tiago Toguro nasceram da Mansão Maromba e hoje chegam ao Brasil inteiro.</p>
+      <div class="hero__acoes a">
+        <a class="btn btn--verde" href="#empresas">Conheça as empresas <svg><use href="#i-arrow-down"/></svg></a>
+        <a class="btn-link" href="#distribuidor">Seja distribuidor <svg><use href="#i-arrow-right"/></svg></a>
+      </div>
+      <div class="palco a" id="palco">
+        <canvas class="palco__ovni" id="ovniHero" aria-hidden="true"></canvas>
+        <figure class="hero__latas" aria-label="Energéticos Mansão Maromba nos sabores Maçã Verde, Tropical, Original, Melancia e Zero">
+          <i class="hero__halo" aria-hidden="true"></i>
+          <img class="hl hl--1" src="assets/produtos/lata-maca-verde.webp" width="259" height="620" alt="">
+          <img class="hl hl--2" src="assets/produtos/lata-tropical.webp" width="259" height="620" alt="">
+          <img class="hl hl--3" src="assets/produtos/lata-original.webp" width="259" height="620" alt="">
+          <img class="hl hl--4" src="assets/produtos/lata-melancia.webp" width="259" height="620" alt="">
+          <img class="hl hl--5" src="assets/produtos/lata-zero.webp" width="259" height="620" alt="">
+        </figure>
+      </div>
+
+      <ul class="numeros">
+        <li class="a"><b data-conta="4">4</b><span>empresas no grupo</span></li>
+        <li class="a"><b data-conta="20" data-sufixo="+">20+</b><span>bebidas no catálogo oficial</span></li>
+        <li class="a"><b data-conta="5">5</b><span>sabores de energético</span></li>
+        <li class="a"><b>2018</b><span>ano da primeira empresa</span></li>
+      </ul>
+    </section>
+
+    <!-- ============ FITA ============ -->
+    <div class="fita" aria-label="Campanhas da Mansão Maromba">
+      <div class="fita__inclina"><div class="fita__trilho">
+        <img src="assets/fita/01-aqui-tem.webp" width="421" height="560" alt="Cartaz Aqui tem bebida Mansão Maromba" loading="lazy">
+        <img src="assets/fita/02-tigrinho-com-tigre.webp" width="448" height="560" alt="Lançamento do Whisky Combo Tigrinho" loading="lazy">
+        <img src="assets/fita/03-colors-berry-arte.webp" width="652" height="560" alt="Whisky Colors Berry com explosão de cores" loading="lazy">
+        <img src="assets/fita/04-banner-maca-verde.webp" width="448" height="560" alt="Whisky de maçã verde" loading="lazy">
+        <img src="assets/fita/05-fiorino-mansao-maromba.webp" width="524" height="560" alt="Carro adesivado da Mansão Maromba" loading="lazy">
+        <img src="assets/fita/06-soltaram-o-tigrinho.webp" width="389" height="560" alt="Campanha Soltaram o tigrinho" loading="lazy">
+        <img src="assets/fita/07-aqui-tem-ice.webp" width="396" height="560" alt="Cartaz Aqui tem Ice Mansão Maromba" loading="lazy">
+        <img src="assets/fita/08-cerveja.webp" width="448" height="560" alt="Cerveja pilsen da Mansão" loading="lazy">
+      </div></div>
+    </div>
+
+    <!-- ============ EMPRESAS ============ -->
+    <section class="marcas cena" id="empresas" data-secao="empresas">
+      <h2 class="titulo titulo--centro a">As empresas<br><span>Quatro negócios, uma marca no centro de tudo.</span></h2>
+      <div class="marcas__grade">
+        <article class="marca marca--rosa a">
+          <img class="marca__logo" src="assets/logo-mansao-branco.webp" width="408" height="640" alt="" loading="lazy">
+          <div>
+            <small>Conteúdo e publicidade · desde 2021</small>
+            <h3>Mansão Maromba</h3>
+            <p>A marca-mãe do grupo: conteúdo, eventos e parcerias com empresas, com sedes nas principais cidades do Brasil.</p>
+          </div>
+        </article>
+        <a class="marca marca--limao a" href="#bebidas">
+          <svg class="marca__ico"><use href="#i-lightning"/></svg>
+          <div>
+            <small>Bebidas · desde 2023</small>
+            <h3>Bebidas Mansão Maromba</h3>
+            <p>Energéticos, drinks prontos e destilados, com distribuidores pelo país.</p>
+          </div>
+          <span class="marca__seta"><svg><use href="#i-arrow-right"/></svg></span>
+        </a>
+        <article class="marca marca--ciano a">
+          <svg class="marca__ico"><use href="#i-microphone-stage"/></svg>
+          <div>
+            <small>Música · desde 2023</small>
+            <h3>Mansão Maromba Produções</h3>
+            <p>Produtora artística e musical, que lança e acelera os talentos da casa.</p>
+          </div>
+        </article>
+        <article class="marca marca--amarelo a">
+          <svg class="marca__ico"><use href="#i-t-shirt"/></svg>
+          <div>
+            <small>Vestuário · desde 2018</small>
+            <h3>Toguro Vestuário</h3>
+            <p>A primeira empresa do grupo, de roupas, e a dona do registro da marca Mansão Maromba.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ HISTÓRIA (marcos das empresas) ============ -->
+    <section class="trajetoria cena" id="historia" data-secao="historia">
+      <div class="trajetoria__foto a">
+        <img src="assets/fotos/aqui-tem.webp" width="640" height="851" alt="Cartaz Aqui tem bebida Mansão Maromba com a linha de garrafas" loading="lazy">
+      </div>
+      <div class="trajetoria__texto">
+        <h2 class="titulo a">História<br><span>De uma loja de roupas a um grupo de marcas.</span></h2>
+        <ol class="linha" id="linha">
+          <li class="linha__item">
+            <b>2018</b>
+            <h3>A primeira empresa</h3>
+            <p>Abre em São Paulo a Toguro Comércio de Roupas, que hoje guarda o registro da marca Mansão Maromba.</p>
+          </li>
+          <li class="linha__item">
+            <b>2019</b>
+            <h3>Nasce a Mansão Maromba</h3>
+            <p>Em 15 de outubro, a casa abre as portas e vira ponto de encontro de fisiculturistas, lutadores, cantores e humoristas. Ali nasce a marca.</p>
+          </li>
+          <li class="linha__item">
+            <b>2021</b>
+            <h3>A marca vira empresa</h3>
+            <p>Chega a Mansão Maromba Ltda, dedicada a publicidade, conteúdo e parcerias com outras marcas.</p>
+          </li>
+          <li class="linha__item">
+            <b>2023</b>
+            <h3>Música e bebidas</h3>
+            <p>O grupo ganha a produtora artística e a linha de bebidas, com energéticos, drinks prontos e destilados.</p>
+          </li>
+          <li class="linha__item">
+            <b>2025</b>
+            <h3>Catálogo oficial</h3>
+            <p>A linha passa de 20 bebidas e abre espaço para distribuidores regionais em todo o país.</p>
+          </li>
+          <li class="linha__item">
+            <b>2026</b>
+            <h3>Sabor energético</h3>
+            <p>Um drink pronto da Mansão vira meme nacional, e a marca estampa a camisa do Fortaleza.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ BEBIDAS: energético ============ -->
+    <section class="bebidas cena" id="bebidas" data-secao="bebidas" style="--sabor:#FF1F8E">
+      <i class="bebidas__luz" aria-hidden="true"></i>
+      <div class="bebidas__palco a">
+        <div class="bebidas__latas" id="latas">
+          <img class="lata ativa" data-sabor="original" src="assets/produtos/lata-original.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Original">
+          <img class="lata" data-sabor="maca-verde" src="assets/produtos/lata-maca-verde.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Maçã Verde" loading="lazy">
+          <img class="lata" data-sabor="tropical" src="assets/produtos/lata-tropical.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Tropical" loading="lazy">
+          <img class="lata" data-sabor="melancia" src="assets/produtos/lata-melancia.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Melancia" loading="lazy">
+          <img class="lata" data-sabor="zero" src="assets/produtos/lata-zero.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Zero" loading="lazy">
+        </div>
+        <div class="bebidas__litros" id="litros" aria-hidden="true">
+          <img class="litro ativa" data-sabor="original" src="assets/produtos/litro-original.webp" width="182" height="620" alt="">
+          <img class="litro" data-sabor="maca-verde" src="assets/produtos/litro-maca-verde.webp" width="182" height="620" alt="" loading="lazy">
+          <img class="litro" data-sabor="tropical" src="assets/produtos/litro-tropical.webp" width="182" height="620" alt="" loading="lazy">
+          <img class="litro" data-sabor="melancia" src="assets/produtos/litro-melancia.webp" width="182" height="620" alt="" loading="lazy">
+          <img class="litro" data-sabor="zero" src="assets/produtos/litro-zero.webp" width="182" height="620" alt="" loading="lazy">
+        </div>
+      </div>
+      <div class="bebidas__texto">
+        <h2 class="titulo a">Energético<br><span>Mansão Maromba.</span></h2>
+        <p class="bebidas__nome a" aria-live="polite"><span id="saborNome">Original</span></p>
+        <p class="bebidas__desc a">Cinco sabores, na lata e na garrafa de 1 litro. Escolha um e veja a Mansão mudar de cor.</p>
+        <div class="sabores a" role="radiogroup" aria-label="Sabores do energético">
+          <button type="button" role="radio" aria-checked="true" data-sabor="original" data-cor="#FF1F8E" data-nome="Original"><i style="--c:#FF1F8E"></i>Original</button>
+          <button type="button" role="radio" aria-checked="false" data-sabor="maca-verde" data-cor="#9BE22B" data-nome="Maçã Verde"><i style="--c:#9BE22B"></i>Maçã Verde</button>
+          <button type="button" role="radio" aria-checked="false" data-sabor="tropical" data-cor="#FFC812" data-nome="Tropical"><i style="--c:#FFC812"></i>Tropical</button>
+          <button type="button" role="radio" aria-checked="false" data-sabor="melancia" data-cor="#FF3448" data-nome="Melancia"><i style="--c:#FF3448"></i>Melancia</button>
+          <button type="button" role="radio" aria-checked="false" data-sabor="zero" data-cor="#D9DCE3" data-nome="Zero"><i style="--c:#D9DCE3"></i>Zero</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BEBIDAS: linha completa ============ -->
+    <section class="linha-completa cena" aria-labelledby="tituloLinha">
+      <div class="linha-completa__topo">
+        <h2 class="titulo a" id="tituloLinha">A linha completa<br><span>Drinks prontos, destilados e água saborizada.</span></h2>
+        <div class="setas a">
+          <button type="button" class="seta" data-car="-1" aria-label="Anterior"><svg><use href="#i-caret-left"/></svg></button>
+          <button type="button" class="seta" data-car="1" aria-label="Próximo"><svg><use href="#i-caret-right"/></svg></button>
+        </div>
+      </div>
+      <div class="carrossel a" id="carrossel" tabindex="0" aria-label="Catálogo de bebidas. Toque numa arte para ampliar.">
+        <button type="button" class="cartao" data-i="0"><img src="assets/produtos/cat-0008.webp" width="1200" height="722" alt="Whisky Combo: o mais procurado e carro-chefe" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="1"><img src="assets/produtos/cat-0009.webp" width="1200" height="722" alt="Vodka Combo" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="2"><img src="assets/produtos/cat-0010.webp" width="1200" height="722" alt="Melancia Gin Combo" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="3"><img src="assets/produtos/cat-0011.webp" width="1200" height="722" alt="Whisky Colors Berry, edição limitada" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="4"><img src="assets/produtos/cat-0012.webp" width="1200" height="722" alt="Whisky Combo Tigrinho, maracujá e manga" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="5"><img src="assets/produtos/cat-0016.webp" width="1200" height="722" alt="Whisky de maçã verde" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="6"><img src="assets/produtos/cat-0018.webp" width="1200" height="722" alt="Ice Red Fruits" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="7"><img src="assets/produtos/cat-0021.webp" width="1200" height="722" alt="Bebida Pura: gin, vodka e whisky" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="8"><img src="assets/produtos/cat-0025.webp" width="1200" height="722" alt="Pure Gin da Mansão" loading="lazy"></button>
+        <button type="button" class="cartao" data-i="9"><img src="assets/produtos/cat-0004.webp" width="1200" height="722" alt="Acqua Blood, água saborizada de limão" loading="lazy"></button>
+      </div>
+      <p class="aviso18 a"><svg><use href="#i-warning"/></svg>Bebidas alcoólicas: venda proibida para menores de 18 anos. Beba com moderação.</p>
+    </section>
+
+    <dialog class="lupa" id="lupa" aria-label="Catálogo ampliado">
+      <div class="lupa__topo">
+        <span class="lupa__conta" id="lupaConta">1 / 10</span>
+        <button type="button" class="lupa__x" data-fechar-lupa aria-label="Fechar"><svg><use href="#i-x"/></svg></button>
+      </div>
+      <div class="lupa__palco">
+        <button type="button" class="seta lupa__seta" data-lupa="-1" aria-label="Anterior"><svg><use href="#i-caret-left"/></svg></button>
+        <img id="lupaImg" src="assets/produtos/cat-0008.webp" width="1200" height="722" alt="Whisky Combo: o mais procurado e carro-chefe">
+        <button type="button" class="seta lupa__seta" data-lupa="1" aria-label="Próximo"><svg><use href="#i-caret-right"/></svg></button>
+      </div>
+      <p class="lupa__pe"><span id="lupaLegenda"></span><span><kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>Esc</kbd> fechar</span></p>
+    </dialog>
+
+    <!-- ============ SABOR ENERGÉTICO ============ -->
+    <section class="meme cena" aria-labelledby="tituloMeme">
+      <figure class="meme__foto a">
+        <img src="assets/fotos/toguro-garrafa.webp" width="840" height="628" alt="Toguro segurando uma garrafa de Vodka Combo da Mansão Maromba" loading="lazy">
+      </figure>
+      <div class="meme__texto">
+        <h2 class="titulo a" id="tituloMeme">Sabor energético<br><span>Quando o produto vira assunto no país inteiro.</span></h2>
+        <p class="a">Em 2026, o drink pronto da Mansão ganhou um apelido que tomou conta da internet. A frase virou bordão, apareceu em todo canto e passou a ser estudada como lição de marca.</p>
+        <p class="a">É o jeito Mansão de lançar produto: a comunidade experimenta primeiro, comenta, e a marca transforma a conversa em pedido no ponto de venda.</p>
+      </div>
+    </section>
+
+    <!-- ============ A MANSÃO ============ -->
+    <section class="mansao cena" id="mansao" data-secao="mansao">
+      <div class="mansao__logo a">
+        <i aria-hidden="true"></i>
+        <img src="assets/logo-mansao-branco.webp" width="408" height="640" alt="Logo da Mansão Maromba: um alienígena com duas espadas cruzadas" loading="lazy">
+      </div>
+      <div class="mansao__texto">
+        <h2 class="titulo a">A Mansão<br><span>A marca-mãe que dá nome a tudo.</span></h2>
+        <p class="a">A Mansão Maromba começou como uma casa para receber os amigos e virou celeiro de talentos: fisiculturistas, lutadores, cantores e humoristas passaram por ela.</p>
+        <p class="a">Hoje é a marca que sustenta o grupo. Está nas latas, nas garrafas, nas roupas e nos palcos, com sedes e parcerias nas principais cidades do Brasil.</p>
+        <img class="mansao__polaroids a" src="assets/fotos/polaroids.webp" width="332" height="339" alt="Polaroides: moletom da Mansão Maromba na Times Square" loading="lazy">
+      </div>
+    </section>
+
+    <!-- ============ FUNDADOR (curto) ============ -->
+    <section class="fundador cena" aria-labelledby="tituloFundador">
+      <figure class="fundador__foto a">
+        <img src="assets/fotos/toguro-fortaleza.webp" width="600" height="670" alt="Tiago Toguro com a camisa do Fortaleza patrocinada pela Mansão Maromba" loading="lazy">
+      </figure>
+      <div class="fundador__texto">
+        <h2 class="titulo a" id="tituloFundador">O fundador<br><span>Tiago Toguro, empresário de São Paulo.</span></h2>
+        <p class="a">Formado em educação física pela Anhembi Morumbi e criado na zona leste da capital, abriu a primeira empresa em 2018. Desde então, cada negócio do grupo nasce da mesma ideia: uma marca que a comunidade sente como sua.</p>
+      </div>
+    </section>
+
+    <!-- ============ DISTRIBUIDOR ============ -->
+    <section class="distribuidor cena" id="distribuidor" data-secao="distribuidor">
+      <div class="distribuidor__texto">
+        <h2 class="a">Leve a Mansão para a sua cidade.</h2>
+        <p class="a">Procuramos distribuidores regionais já estabelecidos para toda a linha de bebidas, alcoólicas e não alcoólicas.</p>
+        <img class="a" src="assets/produtos/combos.webp" width="630" height="470" alt="Quatro garrafas de Whisky e Vodka Combo da Mansão Maromba" loading="lazy">
+      </div>
+      <form class="form a" id="form" novalidate>
+        <h3>Quero ser distribuidor</h3>
+        <label class="campo"><span>Nome completo</span>
+          <input name="nome" type="text" autocomplete="name" inputmode="text" maxlength="80" required>
+          <em class="campo__erro">Digite seu nome completo, só com letras.</em>
+        </label>
+        <label class="campo"><span>WhatsApp com DDD</span>
+          <input name="telefone" type="tel" autocomplete="tel-national" inputmode="numeric" placeholder="(11) 99999-9999" maxlength="15" required>
+          <em class="campo__erro">Digite o DDD e o número completo.</em>
+        </label>
+        <div class="form__dupla">
+          <label class="campo"><span>Cidade</span>
+            <input name="cidade" type="text" autocomplete="address-level2" maxlength="60" required>
+            <em class="campo__erro">Digite a cidade.</em>
+          </label>
+          <label class="campo campo--uf"><span>UF</span>
+            <select name="uf" required>
+              <option value="">--</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+            </select>
+            <em class="campo__erro">Escolha.</em>
+          </label>
+        </div>
+        <label class="campo"><span>Empresa ou distribuidora</span>
+          <input name="empresa" type="text" autocomplete="organization" maxlength="80" required>
+          <em class="campo__erro">Digite o nome da empresa.</em>
+        </label>
+        <button class="btn btn--verde form__enviar" type="submit">Enviar interesse <svg><use href="#i-arrow-right"/></svg></button>
+        <p class="form__nota" role="status">A equipe comercial responde pelo WhatsApp.</p>
+      </form>
+    </section>
+
+    <!-- ============ MANIFESTO ============ -->
+    <section class="manifesto cena" aria-label="Manifesto">
+      <p class="manifesto__frase a"><span class="manifesto__estatico">Marca forte não se compra. Se constrói <em>todo dia</em>.</span><span class="manifesto__digita" aria-hidden="true"></span></p>
+      <p class="manifesto__sub a">Na lata, na garrafa, na roupa e no palco.</p>
+    </section>
+
+    <!-- ============ REDES ============ -->
+    <section class="redes cena" aria-labelledby="tituloRedes">
+      <h2 class="titulo titulo--centro a" id="tituloRedes">Canais oficiais<br><span>Lançamentos, eventos e novidades das marcas.</span></h2>
+      <div class="redes__grade">
+        <a class="rede a" href="https://www.instagram.com/mansaomaromba/" target="_blank" rel="noopener"><svg><use href="#i-instagram-logo"/></svg><span><b>@mansaomaromba</b>Instagram da marca</span><svg class="rede__seta"><use href="#i-arrow-up-right"/></svg></a>
+        <a class="rede a" href="https://www.youtube.com/@mansaomaromba" target="_blank" rel="noopener"><svg><use href="#i-youtube-logo"/></svg><span><b>Mansão Maromba</b>YouTube</span><svg class="rede__seta"><use href="#i-arrow-up-right"/></svg></a>
+        <a class="rede a" href="https://bebidasmansaomaromba.com.br/" target="_blank" rel="noopener"><svg><use href="#i-storefront"/></svg><span><b>Bebidas</b>Site de distribuição</span><svg class="rede__seta"><use href="#i-arrow-up-right"/></svg></a>
+        <a class="rede a" href="https://www.instagram.com/toguro/" target="_blank" rel="noopener"><svg><use href="#i-instagram-logo"/></svg><span><b>@toguro</b>O fundador</span><svg class="rede__seta"><use href="#i-arrow-up-right"/></svg></a>
+      </div>
+    </section>
+
+    <!-- ============ RODAPÉ ============ -->
+    <footer class="rodape cena">
+      <b class="digita a" role="img" aria-label="Toguro."><span class="digita__texto" aria-hidden="true">Toguro<em>.</em></span><i class="digita__cursor" aria-hidden="true"></i></b>
+      <nav class="rodape__redes a" aria-label="Redes sociais">
+        <a href="https://www.instagram.com/mansaomaromba/" target="_blank" rel="noopener" aria-label="Instagram da Mansão Maromba"><svg><use href="#i-instagram-logo"/></svg></a>
+        <a href="https://www.youtube.com/@mansaomaromba" target="_blank" rel="noopener" aria-label="YouTube da Mansão Maromba"><svg><use href="#i-youtube-logo"/></svg></a>
+        <a href="https://www.tiktok.com/@toguro" target="_blank" rel="noopener" aria-label="TikTok do fundador"><svg><use href="#i-tiktok-logo"/></svg></a>
+      </nav>
+      <p class="rodape__aviso a">Venda de bebidas alcoólicas proibida para menores de 18 anos. Beba com moderação.</p>
+      <p class="rodape__base a">
+        <span>© <span id="ano">2026</span> Toguro. Todos os direitos reservados.</span>
+        <span class="credito">Desenvolvido por <a href="https://grbrands.com.br" target="_blank" rel="noopener"><svg class="gr-ico" viewBox="22.5 22 84 84" aria-hidden="true" focusable="false" style="display:inline-block;width:1.5em;height:1.5em;vertical-align:-.45em;margin-right:.4em;flex:none"><clipPath id="gr-ct"><rect x="-60" y="-60" width="220" height="107"/></clipPath><clipPath id="gr-cb"><rect x="-60" y="53" width="220" height="160"/></clipPath><g transform="translate(25.3 24) scale(1.00125) translate(-16 -8.2)"><g fill="currentColor" transform="rotate(-22 50 50)"><g clip-path="url(#gr-ct)"><circle cx="60" cy="50" r="38"/></g><g clip-path="url(#gr-cb)"><circle cx="50" cy="50" r="38"/></g></g></g></svg>GR Brands<span class="ponto-gr">.</span></a></span>
+      </p>
+    </footer>
+  </main>
+
+  <script type="module" src="ovni.js"></script>
+  <script src="luz.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
