@@ -1,8 +1,9 @@
 # Toguro · Proposta institucional (GR Brands)
 
 Site institucional das empresas de Tiago Toguro, feito como **proposta conceitual**
-para apresentar por e-mail. HTML, CSS e JS puros, sem build. A única dependência
-externa é o Three.js (jsDelivr, versão travada em 0.160.0) para o disco voador 3D.
+para apresentar por e-mail. HTML, CSS e JS puros, sem build. O Three.js 0.160.0 (licença MIT,
+`vendor/LICENSE-three.txt`) fica **hospedado no próprio site** (`vendor/`): nenhum
+bloqueador de anúncio derruba o 3D, como acontecia com o CDN.
 
 > Enquanto for proposta: `noindex` no `<head>`, `robots.txt` bloqueando tudo e a
 > faixa "Proposta conceitual" no topo. Se virar o site oficial, apague os três.
@@ -13,7 +14,9 @@ style.css      sistema visual
 app.js         entrada em cascata, ilha, texto que se decifra, luz neon do título,
                história que acende, seletor de sabores, catálogo, formulário,
                manifesto e rodapé digitados
-ovni.js        disco voador 3D (abertura + hero), em Three.js
+ovni.js        cena 3D: disco voador (abertura + hero), lata e garrafa 3D com o rótulo
+               oficial (hero e seletor de sabores)
+vendor/        Three.js e o RoomEnvironment (reflexos)
 luz.js         luz que segue o cursor + inclinação 3D dos cartões (receita do R38tao)
 assets/        imagens (ver "Origem das imagens"), favicon e og.jpg
 robots.txt     bloqueia buscadores enquanto for proposta
@@ -37,19 +40,38 @@ robots.txt     bloqueia buscadores enquanto for proposta
   sessão (`sessionStorage 'ovni-visto'`), com botão "Pular abertura" e Esc/Enter/Espaço.
   A capa preta (`html.abrindo`) segura a página só enquanto o Three.js chega: se não
   chegar em 2,5 s, a página abre sem abertura. Não espera `window.load`.
-- **Hero:** o mesmo disco paira sobre o leque de latas, com o raio verde "abduzindo" as
-  latas; inclina na direção do mouse. Só renderiza com o hero na tela.
+- **Hero (duas colunas):** à direita, o disco paira e puxa pelo raio uma **lata 3D** que
+  gira (sabor Original); uma **garrafa 3D** (Maçã Verde) e outra lata (Melancia) flutuam
+  na frente. Tudo inclina com o mouse. Só renderiza com o hero na tela.
+- **Lata e garrafa em 3D de verdade:** malha torneada em 160 lados a partir da
+  **silhueta das embalagens oficiais** (`assets/3d/lata.json`, `litro.json`) e o rótulo
+  oficial **desenrolado** por cima como textura (`assets/3d/<lata|litro>-<sabor>.webp`).
+  O rótulo vem dos renders frontais oficiais: cada coluna do render é levada ao seu
+  ângulo no cilindro (±72°) e a frente se repete atrás, como numa lata real; a luz que
+  vinha "assada" no render foi neutralizada. Os modelos abertos que achei (Poly Haven,
+  Poly Pizza) eram lata de conserva ou low-poly de 16 lados e proporção errada, por isso
+  a malha saiu da silhueta da embalagem real. Script: `_fonte/desenrola.py`
+  (entrada: render + máscara extraídos do PDF oficial com `pdfimages -j`).
+- **Seletor de sabores:** a lata e a garrafa do sabor escolhido em 3D; ao trocar, dão
+  um giro e trocam o rótulo, e o chão de luz muda de cor.
+- **Anel 3D de produtos** (logo abaixo do hero): fotos oficiais dos produtos num anel
+  que gira sem fim; arrastar gira com inércia, o mouse em cima pausa, setas do teclado
+  avançam uma carta.
 - **Título com luz neon:** "AO IMPÉRIO." é contorno verde; uma lanterna neon segue o
   mouse e acende as letras por onde passa. Sem mouse, ela passeia sozinha. Qualquer
   tecla solta um pulso que acende o título inteiro.
-- **Texto que se decifra:** títulos, nomes das empresas e o formulário entram embaralhados
-  em glifos e travam letra por letra (cada letra com largura fixa, nada pula de linha).
+- **Texto que se decifra:** títulos, subtítulos e parágrafos entram como lero-lero
+  (letras aleatórias da mesma caixa) e se arrumam letra por letra até a frase certa.
+  Cada letra tem largura fixa, nada pula de linha.
 - **Cartões em 3D:** inclinam seguindo o cursor (até 8°) com a luz da casa por cima.
 - **Seletor de sabores:** a lata gira em 3D ao trocar de sabor, a seção inteira muda de
   cor e a lata inclina com o mouse. Gira sozinho até a pessoa escolher.
-- **Fita de campanhas** inclinada em perspectiva, **história** que acende com a rolagem,
-  **manifesto** e **rodapé** digitados.
-- Com "reduzir movimento": sem abertura, sem 3D, sem decifrar; tudo nasce visível.
+- **História** que acende com a rolagem, **manifesto** e **rodapé** digitados.
+- **Piadas do shape:** "Tem shape que não se explica." no manifesto e "O shape continua
+  sem explicação. O resto virou CNPJ." no fundador.
+- **Distribuidor:** o bloco inteiro é preto com contorno verde brilhante.
+- Com "reduzir movimento": sem abertura e sem decifrar; o 3D continua. Sem WebGL, o
+  hero e o seletor mostram as imagens oficiais das latas no lugar.
 
 ## Pendências
 
@@ -68,16 +90,19 @@ robots.txt     bloqueia buscadores enquanto for proposta
 | `logo-mansao-branco.webp`, `alien-verde.webp`, favicons | logo oficial (`bebidasmansaomaromba.com.br`, `logo-mansao-maromba.jpg`); o alienígena do favicon é a cabeça recortada do logo, pintada de verde |
 | `produtos/lata-*`, `litro-*`, `lata473-*`, `pure-gin` | PDFs vetoriais oficiais das embalagens, no mesmo site (`MANSAO-MAROMBA_LATA-3D_*.pdf` etc.), renderizados com fundo transparente |
 | `produtos/cat-*.webp` | páginas do catálogo oficial (`catalogo-mansao-maromba-oficial_compressed_page-*.jpg`) |
-| `produtos/combos.webp`, `fita/*` | materiais promocionais do mesmo site |
+| `produtos/combos.webp` | materiais promocionais do mesmo site |
+| `3d/*.webp` (rótulos) e `3d/*.json` (silhuetas) | renders oficiais em alta dos PDFs `MANSAO-MAROMBA_LATA-3D_*` e `ENERGY-DRINK-_1-LITRO_*` do mesmo site, desenrolados |
+| `anel/*.webp` | fotos oficiais dos produtos nos materiais promocionais (`whisky.jpg`, `vodka.jpg`, `maca-verde.jpg` etc.) |
+| `fotos/mansao-predio.webp` | miniatura oficial do canal Mansão Maromba no YouTube (vídeo `mZ17stIQwdw`), recortada sem o texto |
+| `fotos/palco-sabor.webp` | miniatura oficial do mesmo canal (vídeo `LmccVTM3FVI`), recortada sem pessoas e sem texto |
 | `fotos/aqui-tem.webp` | cartaz "Aqui tem" dos materiais promocionais |
-| `fotos/polaroids.webp` | `toguro_2-removebg-preview.png` do mesmo site |
-| `fotos/toguro-garrafa.webp` | foto de capa da matéria do Diário do Pará sobre o drink "sabor energético" (fev/2026) |
 | `fotos/toguro-fortaleza.webp` | foto de capa da matéria da Rede 98 sobre o patrocínio ao Fortaleza (mar/2026) |
 | `og.jpg` | captura do próprio hero |
 
 ## Testes feitos (19/11/2026)
 
-- Abertura e hero no Chromium (WebGL por SwiftShader), sem erro de JS.
+- Abertura, hero 3D, anel e seletor 3D no **Chrome do Eduardo** (flatpak, GPU NVIDIA),
+  sem erro de JS, no desktop (1440) e no celular (390).
 - Sem rolagem horizontal de 320 a 1920 px.
 - Formulário: 24 verificações do padrão GR Brands (nome ao digitar e colar, telefone
   com máscara, +55, 55 de país, DDD 55, cada campo vazio, envio completo).

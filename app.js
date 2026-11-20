@@ -15,7 +15,7 @@
 
   /* 1) Entrada em cascata: cada .cena revela suas peças .a em sequência */
   const cenas = $$('.cena');
-  $$('.titulo, .tl, .marca h3, .distribuidor h2, .form h3').forEach((el) => { el.dataset.decifra = ''; });
+  $$('.titulo, .titulo > span, .tl, .marca h3, .marca p, .distribuidor h2, .form h3, .linha__item h3, .bebidas__desc, .meme__texto p, .mansao__texto p, .fundador__texto p').forEach((el) => { el.dataset.decifra = ''; });
   cenas.forEach((c) => $$('.a', c).forEach((el, i) => el.style.setProperty('--i', i)));
   /* o hero só entra quando a abertura do disco voador termina */
   const revela = (c) => {
@@ -36,25 +36,27 @@
   /* 1a) Texto que se decifra (efeito "decrypted text"): cada letra
      passa por glifos aleatórios e trava na certa, da esquerda para a
      direita. Cada letra ganha largura fixa, então nada pula de linha. */
-  const GLIFOS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@';
+  const MAI = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&$@', MIN = 'abcdefghijklmnopqrstuvwxyz', NUM = '0123456789';
+  /* glifo aleatório da mesma 'família' da letra: a frase vira lero-lero com cara de texto */
+  const glifo = (ch) => { const g = /[0-9]/.test(ch) ? NUM : ch === ch.toLowerCase() && ch !== ch.toUpperCase() ? MIN : MAI; return g[(Math.random() * g.length) | 0]; };
   function decifra(el) {
     if (!ANIM || el.dataset.decifrando) return;
     const nos = [];
     const anda = (n) => n.childNodes.forEach((c) => {
       if (c.nodeType === 3 && c.textContent.trim()) nos.push(c);
-      /* no .titulo, o <span> é a 2ª linha cinza: fica de fora */
-      else if (c.nodeType === 1 && c.tagName !== 'BR' && !(el.classList.contains('titulo') && c.parentNode === el && c.tagName === 'SPAN')) anda(c);
+      /* filhos que se decifram sozinhos (ex.: a 2ª linha cinza do .titulo) ficam de fora */
+      else if (c.nodeType === 1 && c.tagName !== 'BR' && !c.hasAttribute('data-decifra')) anda(c);
     });
     anda(el);
     if (!nos.length) return;
     el.dataset.decifrando = '1';
-    const letras = [];
+    const letras = [], minhas = [];
     nos.forEach((no) => {
       const frag = document.createDocumentFragment();
       no.textContent.split(/(\s+)/).forEach((pal) => {
         if (!pal) return;
         if (/^\s+$/.test(pal)) { frag.append(pal); return; }
-        const p = document.createElement('span'); p.className = 'dc-pal';
+        const p = document.createElement('span'); p.className = 'dc-pal'; minhas.push(p);
         [...pal].forEach((ch) => { const s = document.createElement('span'); s.className = 'dc'; s.textContent = ch; p.append(s); letras.push({ s, ch }); });
         frag.append(p);
       });
@@ -62,18 +64,21 @@
     });
     letras.forEach((l) => { l.w = l.s.getBoundingClientRect().width; });
     letras.forEach((l) => { l.s.style.width = l.w + 'px'; });
-    const t0 = performance.now(), DUR = 260 + letras.length * 38;
+    /* começa já embaralhado: a frase aparece como lero-lero e vai se arrumando */
+    letras.forEach((l) => { if (/[A-Za-zÀ-ÿ0-9]/.test(l.ch)) l.s.textContent = glifo(l.ch); });
+    const t0 = performance.now(), DUR = Math.min(1900, 420 + letras.length * 34);
     const passo = (agora) => {
       const p = (agora - t0) / DUR;
       letras.forEach((l, i) => {
         const trava = (i / letras.length) * .75 + .25;
         if (p >= trava) { if (l.s.textContent !== l.ch) { l.s.textContent = l.ch; l.s.classList.add('ok'); } }
-        else if (Math.random() < .55) l.s.textContent = GLIFOS[(Math.random() * GLIFOS.length) | 0];
+        else if (Math.random() < .5 && /[A-Za-zÀ-ÿ0-9]/.test(l.ch)) l.s.textContent = glifo(l.ch);
       });
       if (p < 1) requestAnimationFrame(passo);
       else {
         /* devolve o texto puro (melhor para seleção e leitores de tela) */
-        $$('.dc-pal', el).forEach((pal) => pal.replaceWith(pal.textContent));
+        /* só as palavras DESTA decifração: a de um filho pode estar no meio */
+        minhas.forEach((pal) => pal.replaceWith(pal.textContent));
         el.normalize(); delete el.dataset.decifrando;
       }
     };
@@ -165,9 +170,64 @@
     }), { threshold: .6 }).observe(b);
   });
 
-  /* 4) Fita: duplica para o loop contínuo (o CSS anda -50%) */
-  const trilho = $('.fita__trilho');
-  if (trilho) trilho.append(...[...trilho.children].map((n) => { const c = n.cloneNode(true); c.alt = ''; c.setAttribute('aria-hidden', 'true'); return c; }));
+  /* 4) Anel 3D dos produtos: gira sem fim; arrastar gira com inércia;
+     o mouse em cima pausa; setas do teclado avançam uma carta. A carta
+     da frente acende (--f = 1), as de trás apagam. */
+  const anel = $('#anel'), giro = $('#anelGiro');
+  if (anel && giro) {
+    const cartas = $$('.anel__carta', giro), N = cartas.length, PASSO = 360 / N;
+    let ang = 0, inercia = 0, alvo = null, arrasto = null, pausa = false, visivel = false, ultimo = 0;
+    const VEL = ANIM ? -12 : 0; /* graus por segundo */
+    const posiciona = () => {
+      const w = cartas[0].offsetWidth || 220;
+      giro.style.setProperty('--r', Math.round((w / 2) / Math.tan(Math.PI / N) + w * .16) + 'px');
+      cartas.forEach((c, i) => c.style.setProperty('--a', (i * PASSO) + 'deg'));
+    };
+    const pinta = () => {
+      giro.style.transform = `translateZ(calc(var(--r) * -1)) rotateX(-7deg) rotateY(${ang.toFixed(2)}deg)`;
+      cartas.forEach((c, i) => {
+        const rel = ((i * PASSO + ang) % 360 + 360) % 360;
+        const f = Math.max(0, Math.cos(rel * Math.PI / 180));
+        c.style.setProperty('--f', (f * f).toFixed(3));
+      });
+    };
+    const quadro = (agora) => {
+      const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora;
+      if (!arrasto) {
+        if (alvo !== null) { ang += (alvo - ang) * .14; if (Math.abs(alvo - ang) < .05) { ang = alvo; alvo = null; } }
+        else { ang += (pausa ? 0 : VEL) * dt + inercia * dt; inercia *= .94; }
+      }
+      pinta();
+      if (visivel) requestAnimationFrame(quadro);
+    };
+    posiciona(); pinta();
+    addEventListener('resize', posiciona);
+    new IntersectionObserver((es) => es.forEach((e) => {
+      const antes = visivel; visivel = e.isIntersecting;
+      if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); }
+    })).observe(anel);
+    anel.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') pausa = true; });
+    anel.addEventListener('pointerleave', () => { pausa = false; });
+    anel.addEventListener('pointerdown', (e) => {
+      arrasto = { x: e.clientX, ang0: ang, t: performance.now(), ultX: e.clientX }; alvo = null; inercia = 0;
+      anel.setPointerCapture(e.pointerId);
+    });
+    anel.addEventListener('pointermove', (e) => {
+      if (!arrasto) return;
+      const agora = performance.now(), dx = e.clientX - arrasto.ultX, dtm = Math.max(1, agora - arrasto.t);
+      inercia = (dx * .32) / (dtm / 1000);
+      arrasto.ultX = e.clientX; arrasto.t = agora;
+      ang = arrasto.ang0 + (e.clientX - arrasto.x) * .32;
+    });
+    const solta = () => { if (!arrasto) return; arrasto = null; inercia = Math.max(-320, Math.min(320, inercia)); };
+    anel.addEventListener('pointerup', solta); anel.addEventListener('pointercancel', solta);
+    anel.addEventListener('keydown', (e) => {
+      const d = { ArrowLeft: 1, ArrowRight: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault(); inercia = 0;
+      alvo = Math.round(((alvo ?? ang) + d * PASSO) / PASSO) * PASSO;
+    });
+  }
 
   /* 5) História: o trilho enche até a linha de leitura (55% da tela);
      os anos que ela já passou acendem e o último ganha o fundo lavado */
@@ -201,6 +261,7 @@
       botoes.forEach((x) => { const on = x === b; x.setAttribute('aria-checked', String(on)); x.tabIndex = on ? 0 : -1; });
       $$('.lata, .litro', bebidas).forEach((img) => img.classList.toggle('ativa', img.dataset.sabor === s));
       bebidas.style.setProperty('--sabor', b.dataset.cor);
+      window.dispatchEvent(new CustomEvent('sabor', { detail: { sabor: s, cor: b.dataset.cor } }));
       if (nome.textContent !== b.dataset.nome) {
         nome.textContent = b.dataset.nome;
         if (ANIM && nome.animate) nome.animate([{ opacity: 0, transform: 'translateY(18px) skewX(-6deg)', filter: 'blur(6px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 520, easing: 'cubic-bezier(.22,.8,.24,1)' });
@@ -363,7 +424,7 @@
   /* 9) Manifesto: digitado quando entra na tela, uma vez só */
   const dig = $('.manifesto__digita');
   if (dig && ANIM && 'IntersectionObserver' in window) {
-    const PARTES = [['Marca forte não se compra. Se constrói ', false], ['todo dia', true], ['.', false]];
+    const PARTES = [['Marca forte, sim: se constrói ', false], ['todo dia', true], ['.', false]];
     const cursor = document.createElement('i');
     cursor.className = 'manifesto__cursor';
     dig.append(cursor);

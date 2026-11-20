@@ -43,7 +43,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="preload" as="image" href="assets/produtos/lata-original.webp">
+  <link rel="preload" as="image" href="assets/3d/lata-original.webp" crossorigin>
   <link rel="stylesheet" href="style.css">
   <script>
     (function () {
@@ -61,11 +61,12 @@
   </script>
   <script type="importmap">
     { "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "./vendor/three.module.min.js",
+        "three/addons/": "./vendor/addons/"
     } }
   </script>
-  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js">
+  <link rel="modulepreload" href="vendor/three.module.min.js">
+  <link rel="modulepreload" href="ovni.js">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-arrow-down" viewBox="0 0 256 256"><path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol><symbol id="i-arrow-up-right" viewBox="0 0 256 256"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></symbol><symbol id="i-barbell" viewBox="0 0 256 256"><path d="M248,120h-8V88a16,16,0,0,0-16-16H208V64a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v56H104V64A16,16,0,0,0,88,48H64A16,16,0,0,0,48,64v8H32A16,16,0,0,0,16,88v32H8a8,8,0,0,0,0,16h8v32a16,16,0,0,0,16,16H48v8a16,16,0,0,0,16,16H88a16,16,0,0,0,16-16V136h48v56a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16v-8h16a16,16,0,0,0,16-16V136h8a8,8,0,0,0,0-16ZM32,168V88H48v80Zm56,24H64V64H88V192Zm104,0H168V64h24V175.82c0,.06,0,.12,0,.18s0,.12,0,.18V192Zm32-24H208V88h16Z"/></symbol><symbol id="i-caret-left" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol><symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-instagram-logo" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"/></symbol><symbol id="i-lightning" viewBox="0 0 256 256"><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></symbol><symbol id="i-list" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"/></symbol><symbol id="i-microphone-stage" viewBox="0 0 256 256"><path d="M168,16A72.07,72.07,0,0,0,96,88a73.29,73.29,0,0,0,.63,9.42L27.12,192.22A15.93,15.93,0,0,0,28.71,213L43,227.29a15.93,15.93,0,0,0,20.78,1.59l94.81-69.53A73.29,73.29,0,0,0,168,160a72,72,0,1,0,0-144Zm56,72a55.72,55.72,0,0,1-11.16,33.52L134.49,43.16A56,56,0,0,1,224,88ZM54.32,216,40,201.68,102.14,117A72.37,72.37,0,0,0,139,153.86ZM112,88a55.67,55.67,0,0,1,11.16-33.51l78.34,78.34A56,56,0,0,1,112,88Zm-2.35,58.34a8,8,0,0,1,0,11.31l-8,8a8,8,0,1,1-11.31-11.31l8-8A8,8,0,0,1,109.67,146.33Z"/></symbol><symbol id="i-storefront" viewBox="0 0 256 256"><path d="M232,96a7.89,7.89,0,0,0-.3-2.2L217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.8A7.89,7.89,0,0,0,24,96h0v16a40,40,0,0,0,16,32v72a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V144a40,40,0,0,0,16-32V96ZM54,48H202l11.42,40H42.61Zm50,56h48v8a24,24,0,0,1-48,0Zm-16,0v8a24,24,0,0,1-35.12,21.26,7.88,7.88,0,0,0-1.82-1.06A24,24,0,0,1,40,112v-8ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm4.93-75.8a8.08,8.08,0,0,0-1.8,1.05A24,24,0,0,1,168,112v-8h48v8A24,24,0,0,1,204.93,132.2Z"/></symbol><symbol id="i-t-shirt" viewBox="0 0 256 256"><path d="M247.59,61.22,195.83,33A8,8,0,0,0,192,32H160a8,8,0,0,0-8,8,24,24,0,0,1-48,0,8,8,0,0,0-8-8H64a8,8,0,0,0-3.84,1L8.41,61.22A15.76,15.76,0,0,0,1.82,82.48l19.27,36.81A16.37,16.37,0,0,0,35.67,128H56v80a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V128h20.34a16.37,16.37,0,0,0,14.58-8.71l19.27-36.81A15.76,15.76,0,0,0,247.59,61.22ZM35.67,112a.62.62,0,0,1-.41-.13L16.09,75.26,56,53.48V112ZM184,208H72V48h16.8a40,40,0,0,0,78.38,0H184Zm36.75-96.14a.55.55,0,0,1-.41.14H200V53.48l39.92,21.78Z"/></symbol><symbol id="i-tiktok-logo" viewBox="0 0 256 256"><path d="M224,72a48.05,48.05,0,0,1-48-48,8,8,0,0,0-8-8H128a8,8,0,0,0-8,8V156a20,20,0,1,1-28.57-18.08A8,8,0,0,0,96,130.69V88a8,8,0,0,0-9.4-7.88C50.91,86.48,24,119.1,24,156a76,76,0,0,0,152,0V116.29A103.25,103.25,0,0,0,224,128a8,8,0,0,0,8-8V80A8,8,0,0,0,224,72Zm-8,39.64a87.19,87.19,0,0,1-43.33-16.15A8,8,0,0,0,160,102v54a60,60,0,0,1-120,0c0-25.9,16.64-49.13,40-57.6v27.67A36,36,0,1,0,136,156V32h24.5A64.14,64.14,0,0,0,216,87.5Z"/></symbol><symbol id="i-warning" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"/></symbol><symbol id="i-whatsapp-logo" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-youtube-logo" viewBox="0 0 256 256"><path d="M164.44,121.34l-48-32A8,8,0,0,0,104,96v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,145.05V111l25.58,17ZM234.33,69.52a24,24,0,0,0-14.49-16.4C185.56,39.88,131,40,128,40s-57.56-.12-91.84,13.12a24,24,0,0,0-14.49,16.4C19.08,79.5,16,97.74,16,128s3.08,48.5,5.67,58.48a24,24,0,0,0,14.49,16.41C69,215.56,120.4,216,127.34,216h1.32c6.94,0,58.37-.44,91.18-13.11a24,24,0,0,0,14.49-16.41c2.59-10,5.67-28.22,5.67-58.48S236.92,79.5,234.33,69.52Zm-15.49,113a8,8,0,0,1-4.77,5.49c-31.65,12.22-85.48,12-86,12H128c-.54,0-54.33.2-86-12a8,8,0,0,1-4.77-5.49C34.8,173.39,32,156.57,32,128s2.8-45.39,5.16-54.47A8,8,0,0,1,41.93,68c30.52-11.79,81.66-12,85.85-12h.27c.54,0,54.38-.18,86,12a8,8,0,0,1,4.77,5.49C221.2,82.61,224,99.43,224,128S221.2,173.39,218.84,182.47Z"/></symbol></svg>
@@ -111,25 +112,21 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero cena" id="inicio" data-secao="inicio">
-      <h1 class="hero__titulo">
-        <span class="a"><span class="tl" data-texto="Do shape">Do shape</span></span>
-        <span class="a"><span class="tl tl--2" data-texto="ao império.">ao império.</span></span>
-      </h1>
-      <p class="hero__sub a">Conteúdo, bebidas, música e vestuário. As empresas de Tiago Toguro nasceram da Mansão Maromba e hoje chegam ao Brasil inteiro.</p>
-      <div class="hero__acoes a">
-        <a class="btn btn--verde" href="#empresas">Conheça as empresas <svg><use href="#i-arrow-down"/></svg></a>
-        <a class="btn-link" href="#distribuidor">Seja distribuidor <svg><use href="#i-arrow-right"/></svg></a>
+      <div class="hero__texto">
+        <h1 class="hero__titulo">
+          <span class="a"><span class="tl" data-texto="Da Mansão">Da Mansão</span></span>
+          <span class="a"><span class="tl tl--2" data-texto="ao império.">ao império.</span></span>
+        </h1>
+        <p class="hero__sub a" data-decifra>Conteúdo, bebidas, música e vestuário. As empresas de Tiago Toguro nasceram dentro da Mansão Maromba e hoje chegam ao Brasil inteiro.</p>
+        <div class="hero__acoes a">
+          <a class="btn btn--verde" href="#empresas">Conheça as empresas <svg><use href="#i-arrow-down"/></svg></a>
+          <a class="btn-link" href="#distribuidor">Seja distribuidor <svg><use href="#i-arrow-right"/></svg></a>
+        </div>
       </div>
       <div class="palco a" id="palco">
-        <canvas class="palco__ovni" id="ovniHero" aria-hidden="true"></canvas>
-        <figure class="hero__latas" aria-label="Energéticos Mansão Maromba nos sabores Maçã Verde, Tropical, Original, Melancia e Zero">
-          <i class="hero__halo" aria-hidden="true"></i>
-          <img class="hl hl--1" src="assets/produtos/lata-maca-verde.webp" width="259" height="620" alt="">
-          <img class="hl hl--2" src="assets/produtos/lata-tropical.webp" width="259" height="620" alt="">
-          <img class="hl hl--3" src="assets/produtos/lata-original.webp" width="259" height="620" alt="">
-          <img class="hl hl--4" src="assets/produtos/lata-melancia.webp" width="259" height="620" alt="">
-          <img class="hl hl--5" src="assets/produtos/lata-zero.webp" width="259" height="620" alt="">
-        </figure>
+        <i class="hero__halo" aria-hidden="true"></i>
+        <canvas class="palco__ovni" id="ovniHero" role="img" aria-label="Disco voador da Mansão Maromba puxando uma lata de energético com o raio trator"></canvas>
+        <img class="palco__reserva" src="assets/produtos/lata-original.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Original">
       </div>
 
       <ul class="numeros">
@@ -140,19 +137,23 @@
       </ul>
     </section>
 
-    <!-- ============ FITA ============ -->
-    <div class="fita" aria-label="Campanhas da Mansão Maromba">
-      <div class="fita__inclina"><div class="fita__trilho">
-        <img src="assets/fita/01-aqui-tem.webp" width="421" height="560" alt="Cartaz Aqui tem bebida Mansão Maromba" loading="lazy">
-        <img src="assets/fita/02-tigrinho-com-tigre.webp" width="448" height="560" alt="Lançamento do Whisky Combo Tigrinho" loading="lazy">
-        <img src="assets/fita/03-colors-berry-arte.webp" width="652" height="560" alt="Whisky Colors Berry com explosão de cores" loading="lazy">
-        <img src="assets/fita/04-banner-maca-verde.webp" width="448" height="560" alt="Whisky de maçã verde" loading="lazy">
-        <img src="assets/fita/05-fiorino-mansao-maromba.webp" width="524" height="560" alt="Carro adesivado da Mansão Maromba" loading="lazy">
-        <img src="assets/fita/06-soltaram-o-tigrinho.webp" width="389" height="560" alt="Campanha Soltaram o tigrinho" loading="lazy">
-        <img src="assets/fita/07-aqui-tem-ice.webp" width="396" height="560" alt="Cartaz Aqui tem Ice Mansão Maromba" loading="lazy">
-        <img src="assets/fita/08-cerveja.webp" width="448" height="560" alt="Cerveja pilsen da Mansão" loading="lazy">
-      </div></div>
-    </div>
+    <!-- ============ ANEL 3D: produtos oficiais ============ -->
+    <section class="anel cena" aria-label="Linha de bebidas Mansão Maromba">
+      <h2 class="titulo titulo--centro a">A linha<br><span>Arraste para girar. Fotos oficiais dos produtos.</span></h2>
+      <div class="anel__palco a" id="anel" tabindex="0" aria-label="Carrossel de produtos. Use as setas do teclado para girar.">
+        <div class="anel__giro" id="anelGiro">
+          <figure class="anel__carta"><img src="assets/anel/whisky.webp" width="640" height="640" alt="Whisky Combo" loading="lazy" draggable="false"><figcaption>Whisky Combo</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/vodka.webp" width="640" height="640" alt="Vodka Combo" loading="lazy" draggable="false"><figcaption>Vodka Combo</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/maca-verde.webp" width="640" height="640" alt="Whisky de Maçã Verde" loading="lazy" draggable="false"><figcaption>Whisky de Maçã Verde</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/colors-berry.webp" width="640" height="640" alt="Whisky Colors Berry" loading="lazy" draggable="false"><figcaption>Whisky Colors Berry</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/ice.webp" width="640" height="640" alt="Ice Banana, Red Fruits e Limão" loading="lazy" draggable="false"><figcaption>Ice Banana, Red Fruits e Limão</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/gin.webp" width="640" height="640" alt="Melancia Gin Combo" loading="lazy" draggable="false"><figcaption>Melancia Gin Combo</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/coconut.webp" width="640" height="640" alt="Whisky Coconut" loading="lazy" draggable="false"><figcaption>Whisky Coconut</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/champanhe.webp" width="640" height="640" alt="Sabor Champagne" loading="lazy" draggable="false"><figcaption>Sabor Champagne</figcaption></figure>
+          <figure class="anel__carta"><img src="assets/anel/cerveja-frente-e-verso.webp" width="640" height="640" alt="Cerveja Pilsen da Mansão" loading="lazy" draggable="false"><figcaption>Cerveja Pilsen da Mansão</figcaption></figure>
+        </div>
+      </div>
+    </section>
 
     <!-- ============ EMPRESAS ============ -->
     <section class="marcas cena" id="empresas" data-secao="empresas">
@@ -240,6 +241,7 @@
     <section class="bebidas cena" id="bebidas" data-secao="bebidas" style="--sabor:#FF1F8E">
       <i class="bebidas__luz" aria-hidden="true"></i>
       <div class="bebidas__palco a">
+        <canvas class="bebidas__3d" id="sabor3d" role="img" aria-label="Lata e garrafa do energético no sabor escolhido, em 3D"></canvas>
         <div class="bebidas__latas" id="latas">
           <img class="lata ativa" data-sabor="original" src="assets/produtos/lata-original.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Original">
           <img class="lata" data-sabor="maca-verde" src="assets/produtos/lata-maca-verde.webp" width="259" height="620" alt="Lata do energético Mansão Maromba Maçã Verde" loading="lazy">
@@ -309,7 +311,7 @@
     <!-- ============ SABOR ENERGÉTICO ============ -->
     <section class="meme cena" aria-labelledby="tituloMeme">
       <figure class="meme__foto a">
-        <img src="assets/fotos/toguro-garrafa.webp" width="840" height="628" alt="Toguro segurando uma garrafa de Vodka Combo da Mansão Maromba" loading="lazy">
+        <img src="assets/fotos/palco-sabor.webp" width="660" height="520" alt="Palco da Mansão Maromba com o alienígena iluminado e as placas do Sabor Energético" loading="lazy">
       </figure>
       <div class="meme__texto">
         <h2 class="titulo a" id="tituloMeme">Sabor energético<br><span>Quando o produto vira assunto no país inteiro.</span></h2>
@@ -328,25 +330,29 @@
         <h2 class="titulo a">A Mansão<br><span>A marca-mãe que dá nome a tudo.</span></h2>
         <p class="a">A Mansão Maromba começou como uma casa para receber os amigos e virou celeiro de talentos: fisiculturistas, lutadores, cantores e humoristas passaram por ela.</p>
         <p class="a">Hoje é a marca que sustenta o grupo. Está nas latas, nas garrafas, nas roupas e nos palcos, com sedes e parcerias nas principais cidades do Brasil.</p>
-        <img class="mansao__polaroids a" src="assets/fotos/polaroids.webp" width="332" height="339" alt="Polaroides: moletom da Mansão Maromba na Times Square" loading="lazy">
       </div>
+      <figure class="mansao__sede a">
+        <img src="assets/fotos/mansao-predio.webp" width="1280" height="505" alt="Sede da Mansão Maromba: prédio com a marca na fachada, piscina e telão no terraço" loading="lazy">
+        <figcaption>A sede da Mansão, com a marca na fachada.</figcaption>
+      </figure>
     </section>
 
     <!-- ============ FUNDADOR (curto) ============ -->
     <section class="fundador cena" aria-labelledby="tituloFundador">
       <figure class="fundador__foto a">
-        <img src="assets/fotos/toguro-fortaleza.webp" width="600" height="670" alt="Tiago Toguro com a camisa do Fortaleza patrocinada pela Mansão Maromba" loading="lazy">
+        <img src="assets/fotos/toguro-fortaleza.webp" width="640" height="670" alt="Tiago Toguro com a camisa do Fortaleza patrocinada pela Mansão Maromba" loading="lazy">
       </figure>
       <div class="fundador__texto">
         <h2 class="titulo a" id="tituloFundador">O fundador<br><span>Tiago Toguro, empresário de São Paulo.</span></h2>
-        <p class="a">Formado em educação física pela Anhembi Morumbi e criado na zona leste da capital, abriu a primeira empresa em 2018. Desde então, cada negócio do grupo nasce da mesma ideia: uma marca que a comunidade sente como sua.</p>
+        <p class="a">Formado em educação física pela Anhembi Morumbi e criado na zona leste da capital, começou com o canal Em Busca do Shape Inexplicável e abriu a primeira empresa em 2018.</p>
+        <p class="a fundador__piada">O shape continua sem explicação. O resto virou CNPJ.</p>
       </div>
     </section>
 
     <!-- ============ DISTRIBUIDOR ============ -->
     <section class="distribuidor cena" id="distribuidor" data-secao="distribuidor">
       <div class="distribuidor__texto">
-        <h2 class="a">Leve a Mansão para a sua cidade.</h2>
+        <h2 class="a">Leve a Mansão para a <em>sua cidade.</em></h2>
         <p class="a">Procuramos distribuidores regionais já estabelecidos para toda a linha de bebidas, alcoólicas e não alcoólicas.</p>
         <img class="a" src="assets/produtos/combos.webp" width="630" height="470" alt="Quatro garrafas de Whisky e Vodka Combo da Mansão Maromba" loading="lazy">
       </div>
@@ -384,7 +390,8 @@
 
     <!-- ============ MANIFESTO ============ -->
     <section class="manifesto cena" aria-label="Manifesto">
-      <p class="manifesto__frase a"><span class="manifesto__estatico">Marca forte não se compra. Se constrói <em>todo dia</em>.</span><span class="manifesto__digita" aria-hidden="true"></span></p>
+      <p class="manifesto__kicker a" data-decifra>Tem shape que não se explica.</p>
+      <p class="manifesto__frase a"><span class="manifesto__estatico">Marca forte, sim: se constrói <em>todo dia</em>.</span><span class="manifesto__digita" aria-hidden="true"></span></p>
       <p class="manifesto__sub a">Na lata, na garrafa, na roupa e no palco.</p>
     </section>
 
