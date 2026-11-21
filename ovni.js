@@ -47,6 +47,14 @@ const textura = (url) => {
   }
   return cacheTex.get(url);
 };
+/* mapas de material (aspereza no verde, metal no azul) são dados, não cor */
+const cacheDados = new Map();
+const dados = (url) => {
+  if (!cacheDados.has(url)) {
+    cacheDados.set(url, new Promise((ok) => carregador.load(url, (t) => { t.colorSpace = THREE.NoColorSpace; t.wrapS = THREE.RepeatWrapping; t.anisotropy = 8; ok(t); }, undefined, () => ok(null))));
+  }
+  return cacheDados.get(url);
+};
 const cachePerfil = new Map();
 const perfil = (tipo) => {
   if (!cachePerfil.has(tipo)) cachePerfil.set(tipo, fetch(`assets/3d/${tipo}.json`).then((r) => r.json()));
@@ -140,14 +148,16 @@ function criaTampa(raio) {
 
 /* ---------- embalagem 3D (lata ou litro) com o rótulo oficial ---------- */
 async function criaEmbalagem(tipo, sabor) {
-  const [{ geo, raioTampa }, tex] = await Promise.all([geometria(tipo), textura(`assets/3d/${tipo}-${sabor}.webp`)]);
-  /* alumínio impresso (lata) e PET com verniz (garrafa); a luz de verdade
-     vem das luzes do palco e do ambiente. Um fio de luz própria segura o
-     rótulo legível dentro do raio verde, sem achatar o volume. */
+  const base = `assets/3d/${tipo}-${sabor}`;
+  const [{ geo, raioTampa }, tex, mapa] = await Promise.all([geometria(tipo), textura(base + '.webp'), dados(base + '-mat.webp')]);
+  /* o mapa diz onde é tinta prateada (metal polido) e onde é verniz colorido:
+     o alien, as espadas e os contornos brilham quando a lata balança.
+     Lata: alumínio impresso. Garrafa: PET com verniz, bem menos metal. */
   const mat = tipo === 'lata'
-    ? new THREE.MeshPhysicalMaterial({ map: tex, metalness: .42, roughness: .3, clearcoat: .75, clearcoatRoughness: .16, envMapIntensity: .95 })
-    : new THREE.MeshPhysicalMaterial({ map: tex, metalness: .05, roughness: .26, clearcoat: .75, clearcoatRoughness: .14, envMapIntensity: .9 });
-  mat.emissive = new THREE.Color(0xffffff); mat.emissiveMap = tex; mat.emissiveIntensity = tipo === 'lata' ? .14 : .12;
+    ? new THREE.MeshPhysicalMaterial({ map: tex, metalnessMap: mapa, roughnessMap: mapa, metalness: .74, roughness: 1, clearcoat: .6, clearcoatRoughness: .12, envMapIntensity: 1.15 })
+    : new THREE.MeshPhysicalMaterial({ map: tex, metalnessMap: mapa, roughnessMap: mapa, metalness: .45, roughness: .9, clearcoat: .8, clearcoatRoughness: .1, envMapIntensity: 1 });
+  /* um fio de luz própria segura o rótulo legível dentro do raio verde */
+  mat.emissive = new THREE.Color(0xffffff); mat.emissiveMap = tex; mat.emissiveIntensity = .07;
   const malha = new THREE.Mesh(geo, mat);
   malha.rotation.y = -Math.PI / 2; /* a frente do rótulo olhando para a câmera */
   const g = new THREE.Group(); g.add(malha);
@@ -155,8 +165,9 @@ async function criaEmbalagem(tipo, sabor) {
   g.userData = { malha, tipo, sabor,
     async troca(novo) {
       if (novo === g.userData.sabor) return;
-      const t = await textura(`assets/3d/${tipo}-${novo}.webp`);
-      if (t) { mat.map = t; mat.emissiveMap = t; mat.needsUpdate = true; g.userData.sabor = novo; }
+      const b = `assets/3d/${tipo}-${novo}`;
+      const [t, m] = await Promise.all([textura(b + '.webp'), dados(b + '-mat.webp')]);
+      if (t) { mat.map = t; mat.emissiveMap = t; if (m) { mat.metalnessMap = m; mat.roughnessMap = m; } mat.needsUpdate = true; g.userData.sabor = novo; }
     },
   };
   return g;
@@ -285,8 +296,9 @@ function estudio(r, claro = false) {
   painel(16, 9, [0, 13, 3], 0xffffff, 2.6);      /* teto */
   painel(7, 10, [-10, 4, 9], 0xffffff, 4.2);     /* chave na frente, à esquerda */
   painel(2.4, 16, [12, 0, 2], 0xffffff, 5);      /* tira à direita: o filete vertical da lata */
-  painel(2, 14, [-12, 0, -3], 0x9dffd8, 2.6);    /* tira menta atrás, à esquerda */
-  painel(2, 14, [10, 0, -10], 0xb8ff7a, 2.6);    /* tira verde atrás, à direita */
+  painel(2, 14, [-12, 0, -3], 0xffffff, 2.4);    /* tira atrás, à esquerda */
+  painel(2, 14, [10, 0, -10], 0xffffff, 2.4);    /* tira atrás, à direita */
+  painel(18, 12, [0, 1, 17], 0xffffff, 2.2);     /* rebatedor grande atrás da câmera: a tinta prateada de frente fica prata, não preta */
   painel(40, 40, [0, -16, 0], 0x1a3a12, .5);     /* chão verde fraco */
   const pm = new THREE.PMREMGenerator(r);
   const env = pm.fromScene(s, .02).texture;
@@ -308,12 +320,13 @@ function criaPalco(canvas, fov = 30) {
   const envClaro = estudio(r, true);
   const cam = new THREE.PerspectiveCamera(fov, 1, .1, 400); cam.position.set(0, 0, 12);
   /* luzes diretas, leves: o grosso do volume vem dos reflexos do estúdio.
-     Chave do alto à esquerda, preenchimento fraco e dois recortes por trás
-     (verde e menta, as cores da casa) que desenham as bordas do cilindro */
+     Chave do alto à esquerda, preenchimento fraco e dois recortes brancos por
+     trás que desenham as bordas (recorte colorido deixava a borda com cara de
+     efeito barato; a cor da casa fica no raio e no fundo) */
   const chave = new THREE.DirectionalLight(0xffffff, 1.5); chave.position.set(-5, 7, 9); cena.add(chave);
   const preenche = new THREE.DirectionalLight(0xe8fff0, .35); preenche.position.set(7, 1, 6); cena.add(preenche);
-  const recorteE = new THREE.DirectionalLight(MENTA, 1.8); recorteE.position.set(-9, 2, -6); cena.add(recorteE);
-  const recorteD = new THREE.DirectionalLight(VERDE, 1.8); recorteD.position.set(9, 3, -6); cena.add(recorteD);
+  const recorteE = new THREE.DirectionalLight(0xeefff6, 1.6); recorteE.position.set(-9, 2, -6); cena.add(recorteE);
+  const recorteD = new THREE.DirectionalLight(0xf6fff0, 1.6); recorteD.position.set(9, 3, -6); cena.add(recorteD);
   cena.add(new THREE.HemisphereLight(0xffffff, 0x0b1a0d, .2));
   const vis = { w: 1, h: 1 };
   const medir = () => {

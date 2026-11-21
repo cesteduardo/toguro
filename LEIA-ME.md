@@ -55,9 +55,14 @@ robots.txt     bloqueia buscadores enquanto for proposta
   Quando o cliente mandar o verso, é só passar a segunda imagem no `desenrola.py`.
 - **Tampa da lata:** borda enrolada na malha, tampa de alumínio com friso, abertura
   marcada e rebite, e o lacre em 3D. As latas ficam inclinadas para a tampa aparecer.
+- **Tinta prateada de verdade:** o `desenrola.py` também gera `<nome>-mat.webp` (aspereza
+  no verde, metal no azul): a tinta prateada (alien, espadas, contornos) vira metal
+  polido e o resto é verniz colorido sobre alumínio. É o que faz o alien brilhar
+  quando a lata balança.
 - **Luz:** estúdio de produto próprio (`estudio()` no ovni.js): sala escura com
-  softboxes grandes (teto, chave à esquerda, tira vertical à direita e tiras verde e
-  menta atrás), que dão os reflexos longos de foto de lata; o disco reflete uma versão
+  softboxes grandes (teto, chave à esquerda, tira vertical à direita, tiras brancas
+  atrás e um rebatedor grande atrás da câmera), recortes brancos (os coloridos
+  deixavam a borda com cara de efeito), que dão os reflexos longos de foto de lata; o disco reflete uma versão
   clara da sala para o cromo não ficar preto. O raio trator desenha só a parede de trás
   do cone, então brilha atrás da lata sem lavar o rótulo. Rótulos em 2048 px. No
   seletor, sombra de contato macia sob cada peça. Os modelos abertos que achei (Poly Haven,
@@ -73,7 +78,10 @@ robots.txt     bloqueia buscadores enquanto for proposta
   camiseta com o alien oficial), fatos de cada empresa e o empilhamento do warbox.tv:
   cada cartão gruda no topo, o próximo sobe por cima e o de baixo encolhe e escurece.
   No celular, lista comum. Os ícones são modelados em `_fonte/icones.html` e
-  renderizados uma vez na GPU para `assets/icones/*.webp`.
+  renderizados uma vez na GPU em **path tracing** (three-gpu-pathtracer, 1000 amostras,
+  luz realista como no Blender) para `assets/icones/*.webp`. Para refazer:
+  `cd _fonte && npm install`, sirva a raiz do projeto e abra
+  `/_fonte/icones.html?i=alien&n=1000` (alien, raio, microfone, camiseta).
 - **Título com luz neon:** "AO IMPÉRIO." é contorno verde; uma lanterna neon segue o
   mouse e acende as letras por onde passa. Sem mouse, ela passeia sozinha. Qualquer
   tecla solta um pulso que acende o título inteiro.

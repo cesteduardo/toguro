@@ -91,6 +91,21 @@ tex = np.clip(tex, 0, 255).astype(np.uint8)
 
 subprocess.run(['magick', '-size', f'{LT}x{HT}', '-depth', '8', 'rgb:-', '-quality', '86', saida + '.webp'], input=tex.tobytes(), check=True)
 
+# --- mapa de material (<nome>-mat.webp, como o ORM do glTF: G = aspereza, B = metal)
+# tinta prateada (pouca cor, clara) = metal polido; tinta preta = fosca; o resto é
+# verniz colorido sobre alumínio (meio metálico). É o que faz o alien e as letras
+# prateadas brilharem quando a lata balança, como numa lata de verdade.
+f = tex.astype(np.float32) / 255
+mx, mn = f.max(axis=2), f.min(axis=2)
+sat = np.where(mx > 1e-3, (mx - mn) / np.maximum(mx, 1e-3), 0)
+prata = np.clip((.22 - sat) / .12, 0, 1) * np.clip((mx - .42) / .15, 0, 1)
+escuro = np.clip((.2 - mx) / .1, 0, 1)
+metal = .55 * (1 - prata) * (1 - escuro) + 1.0 * prata + .1 * escuro
+aspero = .3 * (1 - prata) * (1 - escuro) + .16 * prata + .42 * escuro
+mat = np.stack([np.ones_like(metal), aspero, metal], 2)
+mat = (np.clip(mat, 0, 1) * 255).astype(np.uint8)
+subprocess.run(['magick', '-size', f'{LT}x{HT}', '-depth', '8', 'rgb:-', '-blur', '0x0.8', '-quality', '90', saida + '-mat.webp'], input=mat.tobytes(), check=True)
+
 # --- perfil normalizado (de baixo para cima), ~120 pontos
 n = 120
 idx = np.linspace(0, len(r_suave) - 1, n).astype(int)
