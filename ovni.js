@@ -12,7 +12,6 @@
    Sem WebGL: a página fica com as imagens comuns (nada quebra).
    ============================================================ */
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const html = document.documentElement;
 const REDUZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -117,7 +116,7 @@ function texturaTampa() {
 }
 function criaTampa(raio) {
   const g = new THREE.Group();
-  const metal = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: texturaTampa(), metalness: .9, roughness: .3, clearcoat: .4, envMapIntensity: 1.1 });
+  const metal = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: texturaTampa(), metalness: .8, roughness: .34, clearcoat: .5, clearcoatRoughness: .2, envMapIntensity: 1.5 });
   const disco = new THREE.Mesh(new THREE.CircleGeometry(raio, 96), metal);
   disco.rotation.x = -Math.PI / 2; g.add(disco);
   /* lacre (anel de puxar): sai do rebite e aponta para trás, longe da abertura */
@@ -132,7 +131,7 @@ function criaTampa(raio) {
   furo.absellipse(0, L * .62, W * .27, L * .2, 0, Math.PI * 2, true);
   forma.holes.push(furo);
   const geoLacre = new THREE.ExtrudeGeometry(forma, { depth: raio * .025, bevelEnabled: true, bevelThickness: raio * .012, bevelSize: raio * .012, bevelSegments: 3, curveSegments: 24 });
-  const lacre = new THREE.Mesh(geoLacre, new THREE.MeshPhysicalMaterial({ color: 0xdfe3e8, metalness: 1, roughness: .22, clearcoat: .6, envMapIntensity: 1.25 }));
+  const lacre = new THREE.Mesh(geoLacre, new THREE.MeshPhysicalMaterial({ color: 0xeef1f4, metalness: .95, roughness: .2, clearcoat: .6, envMapIntensity: 1.6 }));
   /* deitado sobre a tampa, um fio acima; +y do desenho vira -z (para trás) */
   lacre.rotation.x = -Math.PI / 2; lacre.position.y = raio * .03; lacre.position.z = raio * .05;
   g.add(lacre);
@@ -147,7 +146,7 @@ async function criaEmbalagem(tipo, sabor) {
      rótulo legível dentro do raio verde, sem achatar o volume. */
   const mat = tipo === 'lata'
     ? new THREE.MeshPhysicalMaterial({ map: tex, metalness: .42, roughness: .3, clearcoat: .75, clearcoatRoughness: .16, envMapIntensity: .95 })
-    : new THREE.MeshPhysicalMaterial({ map: tex, metalness: .05, roughness: .22, clearcoat: 1, clearcoatRoughness: .08, envMapIntensity: .85 });
+    : new THREE.MeshPhysicalMaterial({ map: tex, metalness: .05, roughness: .26, clearcoat: .75, clearcoatRoughness: .14, envMapIntensity: .9 });
   mat.emissive = new THREE.Color(0xffffff); mat.emissiveMap = tex; mat.emissiveIntensity = tipo === 'lata' ? .14 : .12;
   const malha = new THREE.Mesh(geo, mat);
   malha.rotation.y = -Math.PI / 2; /* a frente do rótulo olhando para a câmera */
@@ -229,9 +228,10 @@ function criaOvni(brilho, alien) {
         float borda = pow(1.0 - abs(dot(vN, vV)), 1.6) * .85 + .22;
         float aneis = .62 + .38 * sin(vUv.y * 44.0 + uTempo * 7.0);
         float pe = smoothstep(0.0, .18, vUv.y);
-        gl_FragColor = vec4(uCor * 1.2, topo * borda * aneis * pe * uForca * .46);
+        gl_FragColor = vec4(uCor * 1.2, topo * borda * aneis * pe * uForca * .74);
       }`,
-    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+    /* só a parede de trás do cone: o raio brilha ATRÁS da lata e não lava o rótulo de verde */
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.BackSide,
   });
   const feixe = new THREE.Mesh(geoF, matF); feixe.position.y = -.3; feixe.renderOrder = 5; g.add(feixe);
 
@@ -270,6 +270,32 @@ function criaOvni(brilho, alien) {
   };
 }
 
+/* ---------- estúdio de foto de produto (mapa de reflexos) ----------
+   Sala escura com softboxes grandes: um teto, uma chave na frente à esquerda e
+   tiras verticais nas laterais. É o que dá os reflexos longos e limpos de foto
+   de lata, no lugar das lâmpadas pequenas do RoomEnvironment (que salpicavam
+   pontinhos de brilho na garrafa). Gerado uma vez por palco. */
+function estudio(r, claro = false) {
+  const s = new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.BoxGeometry(40, 40, 40), new THREE.MeshBasicMaterial({ color: claro ? 0x4a524d : 0x0b0d0c, side: THREE.BackSide })));
+  const painel = (w, h, pos, cor, forca) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(cor).multiplyScalar(forca), side: THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 0, 0); s.add(m);
+  };
+  painel(16, 9, [0, 13, 3], 0xffffff, 2.6);      /* teto */
+  painel(7, 10, [-10, 4, 9], 0xffffff, 4.2);     /* chave na frente, à esquerda */
+  painel(2.4, 16, [12, 0, 2], 0xffffff, 5);      /* tira à direita: o filete vertical da lata */
+  painel(2, 14, [-12, 0, -3], 0x9dffd8, 2.6);    /* tira menta atrás, à esquerda */
+  painel(2, 14, [10, 0, -10], 0xb8ff7a, 2.6);    /* tira verde atrás, à direita */
+  painel(40, 40, [0, -16, 0], 0x1a3a12, .5);     /* chão verde fraco */
+  const pm = new THREE.PMREMGenerator(r);
+  const env = pm.fromScene(s, .02).texture;
+  pm.dispose();
+  return env;
+}
+
+const cromo = (obj, env) => obj.traverse((o) => { if (o.material && o.material.metalness === 1) o.material.envMap = env; });
+
 /* ---------- palco: renderizador + cena + câmera ---------- */
 function criaPalco(canvas, fov = 30) {
   const r = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
@@ -277,17 +303,18 @@ function criaPalco(canvas, fov = 30) {
   r.outputColorSpace = THREE.SRGBColorSpace;
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.15;
   const cena = new THREE.Scene();
-  const pm = new THREE.PMREMGenerator(r);
-  cena.environment = pm.fromScene(new RoomEnvironment(), .04).texture;
+  cena.environment = estudio(r);
+  /* o cromo do disco reflete uma sala mais clara (na sala escura ele fica preto) */
+  const envClaro = estudio(r, true);
   const cam = new THREE.PerspectiveCamera(fov, 1, .1, 400); cam.position.set(0, 0, 12);
-  /* luz de estúdio de produto: chave macia do alto à esquerda, preenchimento
-     fraco do outro lado e dois recortes por trás que desenham as bordas do
-     cilindro (verde e menta, as cores da casa) */
-  const chave = new THREE.DirectionalLight(0xffffff, 2.1); chave.position.set(-5, 7, 9); cena.add(chave);
-  const preenche = new THREE.DirectionalLight(0xe8fff0, .55); preenche.position.set(7, 1, 6); cena.add(preenche);
-  const recorteE = new THREE.DirectionalLight(MENTA, 2.4); recorteE.position.set(-9, 2, -6); cena.add(recorteE);
-  const recorteD = new THREE.DirectionalLight(VERDE, 2.4); recorteD.position.set(9, 3, -6); cena.add(recorteD);
-  cena.add(new THREE.HemisphereLight(0xffffff, 0x0b1a0d, .35));
+  /* luzes diretas, leves: o grosso do volume vem dos reflexos do estúdio.
+     Chave do alto à esquerda, preenchimento fraco e dois recortes por trás
+     (verde e menta, as cores da casa) que desenham as bordas do cilindro */
+  const chave = new THREE.DirectionalLight(0xffffff, 1.5); chave.position.set(-5, 7, 9); cena.add(chave);
+  const preenche = new THREE.DirectionalLight(0xe8fff0, .35); preenche.position.set(7, 1, 6); cena.add(preenche);
+  const recorteE = new THREE.DirectionalLight(MENTA, 1.8); recorteE.position.set(-9, 2, -6); cena.add(recorteE);
+  const recorteD = new THREE.DirectionalLight(VERDE, 1.8); recorteD.position.set(9, 3, -6); cena.add(recorteD);
+  cena.add(new THREE.HemisphereLight(0xffffff, 0x0b1a0d, .2));
   const vis = { w: 1, h: 1 };
   const medir = () => {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
@@ -295,7 +322,7 @@ function criaPalco(canvas, fov = 30) {
     vis.h = 2 * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * cam.position.z; vis.w = vis.h * cam.aspect;
   };
   medir();
-  return { r, cena, cam, vis, medir };
+  return { r, cena, cam, vis, medir, envClaro };
 }
 /* deixa o rótulo com a cor viva (sem o tone mapping que lava o magenta) */
 const vivo = (obj) => obj.traverse((o) => { if (o.material) o.material.toneMapped = false; });
@@ -331,7 +358,7 @@ function abertura(alien, brilho) {
     document.body.append(capa);
     html.classList.remove('abrindo');
     const p = criaPalco(capa.querySelector('canvas'), 32);
-    const ovni = criaOvni(brilho, alien); p.cena.add(ovni.g);
+    const ovni = criaOvni(brilho, alien); p.cena.add(ovni.g); cromo(ovni.g, p.envClaro);
 
     const NE = 1400, pe = new Float32Array(NE * 3);
     for (let i = 0; i < NE; i++) { pe[i * 3] = (Math.random() - .5) * 90; pe[i * 3 + 1] = (Math.random() - .5) * 60; pe[i * 3 + 2] = -Math.random() * 160; }
@@ -390,7 +417,7 @@ async function hero(alien, brilho, veioDaAbertura) {
   const canvas = document.getElementById('ovniHero'), palco = document.getElementById('palco');
   if (!canvas || !palco) return;
   const p = criaPalco(canvas, 30);
-  const ovni = criaOvni(brilho, alien); p.cena.add(ovni.g);
+  const ovni = criaOvni(brilho, alien); p.cena.add(ovni.g); cromo(ovni.g, p.envClaro);
   const [latA, litro, latB] = await Promise.all([criaEmbalagem('lata', 'original'), criaEmbalagem('litro', 'maca-verde'), criaEmbalagem('lata', 'melancia')]);
   [latA, litro, latB].forEach((o) => { vivo(o); p.cena.add(o); });
   palco.classList.add('com-3d');

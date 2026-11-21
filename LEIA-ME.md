@@ -55,9 +55,12 @@ robots.txt     bloqueia buscadores enquanto for proposta
   Quando o cliente mandar o verso, é só passar a segunda imagem no `desenrola.py`.
 - **Tampa da lata:** borda enrolada na malha, tampa de alumínio com friso, abertura
   marcada e rebite, e o lacre em 3D. As latas ficam inclinadas para a tampa aparecer.
-- **Luz:** estúdio de produto (chave macia, preenchimento e dois recortes, verde e
-  menta, que desenham as bordas do cilindro) + reflexos de ambiente. No seletor, sombra
-  de contato macia sob cada peça. Os modelos abertos que achei (Poly Haven,
+- **Luz:** estúdio de produto próprio (`estudio()` no ovni.js): sala escura com
+  softboxes grandes (teto, chave à esquerda, tira vertical à direita e tiras verde e
+  menta atrás), que dão os reflexos longos de foto de lata; o disco reflete uma versão
+  clara da sala para o cromo não ficar preto. O raio trator desenha só a parede de trás
+  do cone, então brilha atrás da lata sem lavar o rótulo. Rótulos em 2048 px. No
+  seletor, sombra de contato macia sob cada peça. Os modelos abertos que achei (Poly Haven,
   Poly Pizza) eram lata de conserva ou low-poly de 16 lados e proporção errada, por isso
   a malha saiu da silhueta da embalagem real. Script: `_fonte/desenrola.py`
   (entrada: render + máscara extraídos do PDF oficial com `pdfimages -j`).
@@ -108,7 +111,7 @@ robots.txt     bloqueia buscadores enquanto for proposta
 | `fotos/mansao-predio.webp` | miniatura oficial do canal Mansão Maromba no YouTube (vídeo `mZ17stIQwdw`), recortada sem o texto |
 | `fotos/colors-berry-arte.webp` | arte oficial do Whisky Colors Berry (`colors-berry-arte.jpg`, materiais promocionais) |
 | `fotos/aqui-tem.webp` | cartaz "Aqui tem" dos materiais promocionais |
-| `fotos/toguro-oficial.webp` | foto do Toguro no site oficial da Bebidas Mansão Maromba (`2023/07/toguro.png`, já sem fundo) |
+| `fotos/toguro-oficial.webp` | foto do Toguro no site oficial da Bebidas Mansão Maromba (`2023/07/toguro.png`, já sem fundo). O arquivo deles vem cortado no quadril e no braço esquerdo: por isso a foto encosta no canto de baixo à direita do cartão do fundador, onde o corte some na borda |
 | `icones/*.webp` | ícones 3D modelados em `_fonte/icones.html`; a estampa da camiseta é o `alien-verde.webp` |
 | `og.jpg` | captura do próprio hero |
 

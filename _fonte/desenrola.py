@@ -46,7 +46,7 @@ altura = (y1 - y0 + 1)
 
 # --- textura desenrolada: altura = linhas do objeto, largura LT (360°)
 HT = int(round(LT * altura / (2 * np.pi * np.nanmax(r_suave)) * 1.0))
-HT = max(256, min(HT, 2048))
+HT = max(256, min(HT, 2400))
 ys = np.linspace(y0, y1, HT)
 us = (np.arange(LT) + .5) / LT
 # a frente fica centrada em u=.25; theta em [-pi, pi)
@@ -64,12 +64,12 @@ for j, yf in enumerate(ys):
     tex[j] = rgb[yy, x0] * (1 - t) + rgb[yy, x0 + 1] * t
 
 # --- tira a luz "assada" do render: as faixas verticais de brilho/sombra
-# são normalizadas pela mediana de cada coluna (força 85%), só na frente
+# são normalizadas pela mediana de cada coluna (força 97%), só na frente
 lum = tex.mean(axis=2)
 colmed = np.median(lum[int(HT * .12):int(HT * .88)], axis=0)
 alvo = np.median(colmed[frente])
 ganho = np.clip(alvo / np.maximum(colmed, 1), .55, 1.8)
-ganho = 1 + (ganho - 1) * .85
+ganho = 1 + (ganho - 1) * .97
 ganho = np.convolve(np.pad(ganho, 8, mode='wrap'), np.ones(9) / 9, mode='same')[8:-8]
 ganho[~frente] = 1
 tex = tex * ganho[None, :, None]

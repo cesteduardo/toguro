@@ -398,12 +398,15 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 .mansao__sede figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 26px 18px; font-size: 14px; color: var(--muted); background: linear-gradient(transparent, rgba(0, 0, 0, .75)); }
 
 /* ============ FUNDADOR ============ */
-.fundador { position: relative; margin-top: clamp(100px, 12vw, 150px); display: grid; grid-template-columns: minmax(260px, 42%) 1fr; align-items: stretch; border-radius: 36px; overflow: hidden; isolation: isolate; background: radial-gradient(80% 120% at 100% 0%, rgba(140, 255, 46, .14), transparent 60%), var(--card); }
-.fundador::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(140, 255, 46, .28); pointer-events: none; }
-/* foto oficial recortada (fundo transparente): de pé sobre um brilho verde, sem ampliar */
-.fundador__foto { margin: 0; min-height: 420px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-top: 36px;
-  background: radial-gradient(60% 55% at 50% 70%, rgba(140, 255, 46, .32), transparent 70%), radial-gradient(90% 60% at 50% 100%, rgba(0, 255, 163, .14), transparent 70%); }
-.fundador__foto img { width: auto; height: auto; max-height: 520px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .55)); }
+.fundador { position: relative; margin-top: clamp(100px, 12vw, 150px); display: grid; grid-template-columns: 1fr minmax(300px, 40%); align-items: stretch; border-radius: 36px; overflow: hidden; isolation: isolate; background: radial-gradient(80% 120% at 100% 100%, rgba(140, 255, 46, .14), transparent 60%), var(--card); }
+.fundador::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(140, 255, 46, .28); pointer-events: none; }
+/* foto oficial recortada (fundo transparente). O arquivo do site deles já vem
+   cortado no quadril (borda de baixo) e no braço esquerdo (borda direita):
+   essas duas bordas encostam no canto de baixo à direita do cartão, então o
+   corte some na borda e ele parece sair do cartão. Sem ampliar (584 px reais). */
+.fundador__foto { order: 2; margin: 0; min-height: 440px; position: relative; display: flex; align-items: flex-end; justify-content: flex-end; padding-top: 40px;
+  background: radial-gradient(60% 55% at 62% 68%, rgba(140, 255, 46, .30), transparent 70%), radial-gradient(90% 60% at 70% 100%, rgba(0, 255, 163, .14), transparent 70%); }
+.fundador__foto img { display: block; width: auto; height: auto; max-height: min(560px, 100%); max-width: 100%; object-fit: contain; object-position: right bottom; }
 .fundador__texto { padding: clamp(28px, 4.5vw, 60px); align-self: center; }
 .fundador__texto p { margin-top: 22px; color: var(--muted); max-width: 620px; }
 .fundador__texto .fundador__piada { margin-top: 14px; font: 400 clamp(17px, 1.5vw, 21px)/1.35 var(--tron); color: var(--verde); text-shadow: 0 0 16px rgba(140, 255, 46, .55); }
@@ -555,8 +558,9 @@ html.abrindo body::after { content: ""; position: fixed; inset: 0; z-index: 300;
   .cab__burger { display: grid; }
   .cab.preso .cab__in { width: min(100% - 24px, 420px); }
   .trajetoria, .bebidas, .meme, .mansao, .distribuidor, .fundador { grid-template-columns: 1fr; }
-  .fundador__foto { min-height: 0; }
-  .fundador__foto img { max-height: 420px; }
+  .fundador__foto { min-height: 0; padding-top: 8px; }
+  .fundador__foto img { max-height: 440px; }
+  .fundador__texto { padding-bottom: 0; }
   .trajetoria__foto { position: relative; top: 0; max-width: 420px; }
   .marca { grid-template-columns: 1fr; min-height: 0; }
   .marca__arte { order: -1; }
