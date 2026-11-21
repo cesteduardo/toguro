@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Ícones 3D · Toguro</title>
+<!--
+  Fonte dos ícones 3D dos cartões das empresas (assets/icones/*.webp).
+  Cada ícone é modelado aqui em Three.js e fotografado com fundo transparente:
+  python3 -m http.server na raiz do projeto, abra _fonte/icones.html?i=alien
+  (alien | raio | microfone | camiseta) e capture o canvas (ver LEIA-ME).
+  Renderizado na GPU, uma vez; o site só carrega a imagem.
+-->
+<style>html, body { margin: 0; background: transparent; } canvas { display: block; }</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.min.js", "three/addons/": "../vendor/addons/" } }</script>
+</head>
+<body>
+<canvas id="c" width="720" height="720" style="width:720px;height:720px"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const qual = new URLSearchParams(location.search).get('i') || 'alien';
+const canvas = document.getElementById('c');
+const r = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, preserveDrawingBuffer: true });
+r.setPixelRatio(1); r.setSize(720, 720, false);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = .88;
+const cena = new THREE.Scene();
+cena.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), .03).texture;
+const cam = new THREE.PerspectiveCamera(26, 1, .1, 100); cam.position.set(0, 0, 11);
+const chave = new THREE.DirectionalLight(0xffffff, 2.4); chave.position.set(-4, 6, 7); cena.add(chave);
+const recorte = new THREE.DirectionalLight(0xffffff, 1.6); recorte.position.set(5, 2, -5); cena.add(recorte);
+cena.add(new THREE.HemisphereLight(0xffffff, 0x223322, .5));
+
+/* plástico macio e brilhante, com degradê de cor de cima para baixo (pintado nos vértices) */
+const plastico = (extra = {}) => new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .36, metalness: 0, clearcoat: .85, clearcoatRoughness: .14, ...extra });
+function degrade(geo, cima, baixo) {
+  geo.computeBoundingBox();
+  const { min, max } = geo.boundingBox, a = new THREE.Color(cima), b = new THREE.Color(baixo), c = new THREE.Color();
+  const pos = geo.attributes.position, cores = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++) {
+    const k = (pos.getY(i) - min.y) / (max.y - min.y || 1);
+    c.copy(b).lerp(a, Math.pow(k, .9)); cores.set([c.r, c.g, c.b], i * 3);
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(cores, 3));
+  return geo;
+}
+const extruda = (forma, prof, bisel) => {
+  const g = new THREE.ExtrudeGeometry(forma, { depth: prof, bevelEnabled: true, bevelThickness: bisel, bevelSize: bisel * .8, bevelSegments: 14, curveSegments: 48 });
+  g.center(); g.computeVertexNormals(); return g;
+};
+const obj = new THREE.Group(); cena.add(obj);
+
+if (qual === 'alien') {
+  /* cabeça de alienígena: esfera que afina até o queixo, olhos amendoados pretos */
+  const geo = new THREE.SphereGeometry(1, 160, 120), p = geo.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    /* afina para o queixo sem quina: o afinamento nasce com inclinação zero */
+    const d = Math.max(0, -v.y), k = 1 - .64 * Math.pow(d, 1.6); v.x *= 1.06 * k; v.z *= k; v.y *= 1 + .42 * d;
+
+    v.z *= .86; p.setXYZ(i, v.x, v.y, v.z);
+  }
+  geo.computeVertexNormals(); degrade(geo, '#B6FF4A', '#1E9E0A');
+  obj.add(new THREE.Mesh(geo, plastico()));
+  const olhoMat = new THREE.MeshPhysicalMaterial({ color: 0x050805, roughness: .06, clearcoat: 1, clearcoatRoughness: .02 });
+  [-1, 1].forEach((s) => {
+    const o = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), olhoMat);
+    o.scale.set(.4, .19, .13); o.rotation.z = s * .42; /* ponta de dentro para baixo, como no logo */
+    o.position.set(s * .42, -.1, .66); obj.add(o);
+  });
+  obj.rotation.set(.08, -.32, .04); obj.scale.setScalar(1.45);
+} else if (qual === 'raio') {
+  const f = new THREE.Shape();
+  [[-.1, 1.5], [.65, 1.5], [.2, .35], [.8, .35], [-.45, -1.5], [-.05, -.2], [-.6, -.2]].forEach(([x, y], i) => (i ? f.lineTo(x, y) : f.moveTo(x, y)));
+  f.closePath();
+  const geo = degrade(extruda(f, .42, .2), '#F4FF3A', '#62B800');
+  obj.add(new THREE.Mesh(geo, plastico()));
+  obj.rotation.set(.18, -.42, -.12); obj.scale.setScalar(1.12);
+} else if (qual === 'microfone') {
+  /* grelha: furinhos escuros num metal claro */
+  const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+  const g = c.getContext('2d'); g.fillStyle = '#d9fff0'; g.fillRect(0, 0, 512, 256);
+  g.fillStyle = 'rgba(10,40,30,.75)';
+  for (let y = 6; y < 256; y += 12) for (let x = (y / 12) % 2 ? 6 : 12; x < 512; x += 12) { g.beginPath(); g.arc(x, y, 3.4, 0, Math.PI * 2); g.fill(); }
+  const tg = new THREE.CanvasTexture(c); tg.colorSpace = THREE.SRGBColorSpace; tg.wrapS = THREE.RepeatWrapping; tg.anisotropy = 8;
+  const cabeca = new THREE.Mesh(new THREE.SphereGeometry(.7, 96, 64), new THREE.MeshPhysicalMaterial({ map: tg, metalness: .85, roughness: .28, clearcoat: .5 }));
+  cabeca.position.y = 1.0; obj.add(cabeca);
+  const aro = new THREE.Mesh(new THREE.TorusGeometry(.6, .09, 32, 96), new THREE.MeshPhysicalMaterial({ color: 0xeafff6, metalness: 1, roughness: .18 }));
+  aro.rotation.x = Math.PI / 2; aro.position.y = .5; obj.add(aro);
+  const perfil = [[0, -1.25], [.24, -1.25], [.3, -1.18], [.34, -.6], [.42, .2], [.5, .5], [0, .5]].map(([x, y]) => new THREE.Vector2(x, y));
+  const corpo = degrade(new THREE.LatheGeometry(perfil, 96), '#3DFFC0', '#008F5A');
+  obj.add(new THREE.Mesh(corpo, plastico()));
+  const botao = new THREE.Mesh(new THREE.CapsuleGeometry(.07, .22, 8, 24), new THREE.MeshPhysicalMaterial({ color: 0x0a2a1e, roughness: .2, clearcoat: 1 }));
+  botao.position.set(0, -.1, .4); obj.add(botao);
+  obj.rotation.set(.12, .3, -.55); obj.scale.setScalar(1.05); obj.position.set(.08, -.05, 0);
+} else if (qual === 'camiseta') {
+  const f = new THREE.Shape();
+  f.moveTo(-.36, 1.02);
+  [[-.98, .86], [-1.42, .3], [-1.06, .02], [-.76, .32], [-.76, -1.06], [.76, -1.06], [.76, .32], [1.06, .02], [1.42, .3], [.98, .86], [.36, 1.02]].forEach(([x, y]) => f.lineTo(x, y));
+  f.quadraticCurveTo(0, .52, -.36, 1.02);
+  const geo = degrade(extruda(f, .34, .2), '#5FE6FF', '#0A7FC4');
+  obj.add(new THREE.Mesh(geo, plastico()));
+  /* estampa: o alienígena verde do logo oficial (assets/alien-verde.webp), como decalque na frente */
+  const tex = await new THREE.TextureLoader().loadAsync('../assets/alien-verde.webp');
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const prop = tex.image.width / tex.image.height, alt = .78;
+  const est = new THREE.Mesh(new THREE.PlaneGeometry(alt * prop, alt), new THREE.MeshPhysicalMaterial({ map: tex, transparent: true, roughness: .4, clearcoat: .6, polygonOffset: true, polygonOffsetFactor: -2 }));
+  est.position.set(0, -.08, .372); obj.add(est);
+  obj.rotation.set(.14, -.38, .06); obj.scale.setScalar(1.18);
+}
+
+r.render(cena, cam);
+document.body.dataset.pronto = '1';
+</script>
+</body>
+</html>

@@ -161,9 +161,10 @@ section { width: min(100% - var(--gutter) * 2, var(--wrap)); margin-inline: auto
 kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .05); color: var(--muted); }
 
 /* ============ HERO ============ */
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); align-items: center; gap: 10px 36px; padding-top: clamp(118px, 13vh, 150px); overflow-x: clip; overflow-y: visible; }
-.hero__texto { position: relative; z-index: 2; }
-.hero__titulo { font: 400 clamp(36px, 4.6vw, 78px)/1.08 var(--tron); text-transform: uppercase; letter-spacing: .01em; }
+/* uma coluna centralizada: o texto no alto e, logo abaixo dele, o disco com as latas */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; padding-top: clamp(118px, 13vh, 150px); overflow-x: clip; overflow-y: visible; }
+.hero__texto { position: relative; z-index: 2; display: grid; justify-items: center; }
+.hero__titulo { font: 400 clamp(36px, 4.9vw, 78px)/1.04 var(--tron); text-transform: uppercase; letter-spacing: .01em; }
 .hero__titulo > span { display: block; }
 .tl { position: relative; display: inline-block; white-space: nowrap; }
 .tl--2 { color: transparent; -webkit-text-stroke: 1.6px rgba(140, 255, 46, .6); }
@@ -173,28 +174,15 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
   -webkit-mask: radial-gradient(circle var(--r, 190px) at var(--lx, -400px) var(--ly, -400px), #000 30%, transparent 72%);
           mask: radial-gradient(circle var(--r, 190px) at var(--lx, -400px) var(--ly, -400px), #000 30%, transparent 72%);
 }
-.hero__sub { max-width: 520px; margin: 26px 0 0; font-size: clamp(17px, 1.5vw, 19.5px); color: var(--muted); }
-.hero__acoes { display: flex; justify-content: flex-start; align-items: center; flex-wrap: wrap; gap: 14px 26px; margin-top: 32px; }
+.hero__sub { max-width: 720px; margin: 20px auto 0; font-size: clamp(17px, 1.5vw, 19.5px); color: var(--muted); }
+.hero__acoes { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px 26px; margin-top: 24px; }
 
-/* leque de latas: a do meio maior, as outras abrem para os lados */
-.palco { position: relative; height: clamp(520px, 78vh, 800px); }
+/* palco 3D largo, colado embaixo do texto */
+.palco { position: relative; width: min(100%, 1040px); height: clamp(460px, 64vh, 660px); margin-top: -6px; }
 .palco__ovni { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
 .palco__reserva { position: absolute; left: 50%; bottom: 8%; height: 66%; width: auto; translate: -50% 0; filter: drop-shadow(0 30px 40px rgba(140, 255, 46, .35)); }
 .palco.com-3d .palco__reserva { display: none; }
-.palco .hero__halo { top: 62%; width: 80%; }
-.hero__latas { position: absolute; z-index: 1; left: 50%; bottom: 0; translate: -50% 0; width: min(700px, 100%); height: 56%; margin: 0; }
-.hero__latas::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: -8px; height: 46px; border-radius: 50%; background: radial-gradient(closest-side, rgba(140, 255, 46, .75), transparent); filter: blur(12px); }
-.hl { position: absolute; z-index: 1; bottom: 0; left: 50%; width: auto; transform-origin: 50% 100%; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .55)); animation: boia 5.5s ease-in-out infinite; transition: filter 1.2s var(--ease); }
-.feixe-on .hl { filter: drop-shadow(0 0 18px rgba(140, 255, 46, .45)) drop-shadow(0 24px 30px rgba(0, 0, 0, .5)); animation-name: abduz; }
-@keyframes abduz { 50% { transform: translateY(-22px); } }
-.hl--3 { z-index: 3; height: 100%; translate: -50% 0; animation-delay: 0s; filter: drop-shadow(0 26px 46px rgba(140, 255, 46, .55)); }
-.hl--2, .hl--4 { z-index: 2; height: 84%; }
-.hl--1, .hl--5 { height: 68%; }
-.hl--2 { translate: -112% 0; rotate: -9deg; animation-delay: -1.2s; }
-.hl--4 { translate: 12% 0; rotate: 9deg; animation-delay: -2.4s; }
-.hl--1 { translate: -168% 0; rotate: -17deg; animation-delay: -3.3s; }
-.hl--5 { translate: 68% 0; rotate: 17deg; animation-delay: -4.1s; }
-@keyframes boia { 50% { transform: translateY(-10px); } }
+.palco .hero__halo { top: 60%; width: min(70%, 640px); }
 .hero__halo {
   position: absolute; z-index: 0; left: 50%; top: 50%; width: 92%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
   background: radial-gradient(circle, rgba(140, 255, 46, .75), rgba(140, 255, 46, .25) 38%, rgba(0, 255, 163, .12) 58%, transparent 70%);
@@ -202,7 +190,7 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 }
 @keyframes respira { 50% { transform: scale(1.08); opacity: .8; } }
 
-.numeros { grid-column: 1 / -1; list-style: none; margin: 0; padding: 0; position: relative; z-index: 3; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.numeros { grid-column: 1 / -1; width: 100%; list-style: none; margin: 0; padding: 0; position: relative; z-index: 3; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .numeros li {
   padding: 24px 22px; border-radius: 24px; text-align: left;
   background: rgba(19, 19, 24, .78); border: 1px solid var(--line);
@@ -224,27 +212,26 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 .fita img { height: clamp(220px, 24vw, 300px); width: auto; border-radius: 22px; }
 @keyframes anda { to { transform: translateX(calc(-50% - 8px)); } }
 
-/* ============ ANEL 3D (produtos oficiais) ============ */
-.anel { margin-top: clamp(90px, 10vw, 130px); }
-.anel__palco {
-  --cw: clamp(190px, 21vw, 290px);
-  position: relative; height: calc(var(--cw) * 1.8); margin-top: 26px; perspective: 1700px; perspective-origin: 50% 22%;
-  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; overflow: hidden;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+/* ============ VITRINE (produtos oficiais passando com a rolagem) ============ */
+/* uma fileira só, que anda do primeiro ao último produto enquanto a seção
+   cruza a tela (app.js, --x). Não é infinita: chega ao fim e para. */
+.vitrine { margin-top: clamp(90px, 10vw, 130px); }
+.vitrine__janela {
+  --cw: clamp(220px, 22vw, 300px);
+  position: relative; margin-top: 34px; overflow: hidden;
+  width: 100vw; margin-inline: calc(50% - 50vw); padding: 10px 0 18px;
 }
-.anel__palco:active { cursor: grabbing; }
-.anel__palco::after { content: ""; position: absolute; left: 20%; right: 20%; bottom: 6%; height: 60px; border-radius: 50%; background: radial-gradient(closest-side, rgba(140, 255, 46, .35), transparent); filter: blur(14px); pointer-events: none; }
-.anel__giro { position: absolute; left: 50%; top: 46%; width: 0; height: 0; transform-style: preserve-3d; }
-.anel__carta {
-  position: absolute; margin: 0; width: var(--cw); left: calc(var(--cw) / -2); top: calc(var(--cw) / -2);
-  transform: rotateY(var(--a, 0deg)) translateZ(var(--r, 360px)); backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  border-radius: 24px; overflow: hidden; background: #fff;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 0 calc(var(--f, 0) * 34px) rgba(140, 255, 46, calc(var(--f, 0) * .55));
-  filter: brightness(calc(.38 + var(--f, 0) * .62)) saturate(calc(.6 + var(--f, 0) * .4));
+.vitrine__trilho { display: flex; gap: 18px; width: max-content; padding-inline: max(var(--gutter), calc(50vw - var(--wrap) / 2)); transform: translate3d(var(--x, 0px), 0, 0); }
+.vitrine__carta {
+  position: relative; flex: none; width: var(--cw); margin: 0; border-radius: 24px; overflow: hidden; background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 24px 50px -24px rgba(0, 0, 0, .9);
 }
-.anel__carta img { width: 100%; aspect-ratio: 1; object-fit: cover; pointer-events: none; }
-.anel__carta figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 14px 12px; font: 600 14px/1.25 var(--inter); color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .78)); }
-.anel__palco:focus-visible { outline: 2px solid var(--verde); outline-offset: -2px; }
+.vitrine__carta img { width: 100%; aspect-ratio: 1; object-fit: cover; pointer-events: none; }
+.vitrine__carta figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 16px 14px; font: 600 14.5px/1.25 var(--inter); color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .8)); }
+.vitrine__janela:focus-visible { outline: 2px solid var(--verde); outline-offset: -4px; }
+/* sem animação: a fileira vira rolagem lateral comum */
+.vitrine--livre .vitrine__janela { overflow-x: auto; scroll-snap-type: x mandatory; }
+.vitrine--livre .vitrine__carta { scroll-snap-align: center; }
 
 /* ============ TRAJETÓRIA ============ */
 .trajetoria { margin-top: clamp(110px, 13vw, 170px); display: grid; grid-template-columns: 5fr 6fr; gap: clamp(40px, 6vw, 80px); align-items: start; }
@@ -270,28 +257,48 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 
 /* ============ MARCAS ============ */
 .marcas { margin-top: clamp(110px, 13vw, 170px); }
-.marcas__grade { margin-top: 48px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+/* cartões grandes que se empilham na rolagem (como as seções do warbox.tv):
+   cada um gruda no topo e o próximo sobe por cima; o de baixo encolhe um
+   pouco e escurece (--cover, 0 → 1, calculado no app.js) */
+.marcas__grade { margin-top: 48px; display: grid; gap: 28px; }
 .marca {
   --c: var(--verde);
-  position: relative; display: grid; grid-template-columns: 92px 1fr auto; gap: 24px; align-items: center;
-  padding: 30px; border-radius: 28px; border: 1px solid var(--line);
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(20px, 4vw, 56px); align-items: center;
+  min-height: clamp(380px, 56vh, 470px); padding: clamp(28px, 4.4vw, 60px); border-radius: 36px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--c) 26%, var(--line));
   background:
-    radial-gradient(120% 150% at 0% 0%, color-mix(in srgb, var(--c) 24%, transparent), transparent 55%),
-    var(--card);
-  transition: transform .4s var(--ease), border-color .4s;
+    radial-gradient(70% 90% at 82% 50%, color-mix(in srgb, var(--c) 22%, transparent), transparent 70%),
+    radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--c) 10%, transparent), transparent 60%),
+    linear-gradient(160deg, #17171e, #0e0e13);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .9);
+  transition: border-color .4s;
+}
+.marca::after { /* a sombra de quem ficou por baixo da pilha */
+  content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
+  background: #050507; opacity: calc(var(--cover, 0) * .62);
 }
 .marca--rosa { --c: var(--verde); } .marca--limao { --c: #E4FF5C; } .marca--ciano { --c: var(--menta); } .marca--amarelo { --c: #3DE0FF; }
-.marca__logo { height: 104px; width: auto; justify-self: center; filter: drop-shadow(0 0 18px rgba(140, 255, 46, .55)); }
-.marca__ico {
-  width: 92px; height: 92px; padding: 24px; border-radius: 26px; color: var(--c);
-  background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
-  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--c) 55%, transparent));
+.marca__texto { position: relative; z-index: 1; }
+.marca__num { display: block; margin-bottom: 22px; font: 400 14px/1 var(--tron); letter-spacing: .08em; color: var(--soft); }
+.marca small { display: block; font-size: 13px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--c); }
+.marca h3 { margin-top: 10px; font: 400 clamp(26px, 3.2vw, 44px)/1.08 var(--tron); text-transform: uppercase; letter-spacing: .01em; }
+.marca p { margin-top: 16px; max-width: 520px; font-size: clamp(16px, 1.3vw, 18px); color: var(--muted); }
+.marca__fatos { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.marca__fatos li {
+  padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--ink);
+  background: rgba(255, 255, 255, .05); border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
 }
-.marca small { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--c); }
-.marca h3 { margin-top: 6px; font: 400 clamp(19px, 1.75vw, 24px)/1.15 var(--tron); text-transform: uppercase; letter-spacing: .01em; }
-.marca p { margin-top: 8px; font-size: 15.5px; color: var(--muted); }
-.marca__seta { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: #0B0B0E; transition: transform .4s var(--ease); }
-.marca__seta svg { width: 20px; height: 20px; }
+.marca__ir { display: inline-flex; align-items: center; gap: 10px; margin-top: 28px; padding: 12px 20px; border-radius: 999px; background: var(--c); color: #0B0B0E; font-weight: 600; font-size: 15px; }
+.marca__ir svg { width: 18px; height: 18px; transition: transform .4s var(--ease); }
+/* o ícone 3D: flutua devagar sobre um brilho da cor da empresa */
+.marca__arte { position: relative; z-index: 1; margin: 0; display: grid; place-items: center; }
+.marca__arte i { position: absolute; width: 78%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 55%, transparent), transparent); filter: blur(26px); opacity: .75; }
+.marca__arte img { position: relative; width: min(100%, 340px); filter: drop-shadow(0 34px 40px rgba(0, 0, 0, .6)); animation: flutua 6s ease-in-out infinite; transition: transform .6s var(--ease); }
+.marca:nth-child(2) .marca__arte img { animation-delay: -1.5s; } .marca:nth-child(3) .marca__arte img { animation-delay: -3s; } .marca:nth-child(4) .marca__arte img { animation-delay: -4.5s; }
+@keyframes flutua { 50% { translate: 0 -14px; rotate: 3deg; } }
+/* empilhar: só em tela larga e alta (no celular os cartões ficam em lista) */
+.empilha .marca { position: sticky; top: calc(108px + var(--k, 0) * 16px); scale: calc(1 - var(--cover, 0) * .05); transform-origin: 50% 0; }
+.empilha .marca:nth-child(2) { --k: 1; } .empilha .marca:nth-child(3) { --k: 2; } .empilha .marca:nth-child(4) { --k: 3; }
 
 /* ============ BEBIDAS: energético ============ */
 .bebidas {
@@ -393,8 +400,10 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 /* ============ FUNDADOR ============ */
 .fundador { position: relative; margin-top: clamp(100px, 12vw, 150px); display: grid; grid-template-columns: minmax(260px, 42%) 1fr; align-items: stretch; border-radius: 36px; overflow: hidden; isolation: isolate; background: radial-gradient(80% 120% at 100% 0%, rgba(140, 255, 46, .14), transparent 60%), var(--card); }
 .fundador::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(140, 255, 46, .28); pointer-events: none; }
-.fundador__foto { margin: 0; min-height: 420px; }
-.fundador__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+/* foto oficial recortada (fundo transparente): de pé sobre um brilho verde, sem ampliar */
+.fundador__foto { margin: 0; min-height: 420px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-top: 36px;
+  background: radial-gradient(60% 55% at 50% 70%, rgba(140, 255, 46, .32), transparent 70%), radial-gradient(90% 60% at 50% 100%, rgba(0, 255, 163, .14), transparent 70%); }
+.fundador__foto img { width: auto; height: auto; max-height: 520px; max-width: 100%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .55)); }
 .fundador__texto { padding: clamp(28px, 4.5vw, 60px); align-self: center; }
 .fundador__texto p { margin-top: 22px; color: var(--muted); max-width: 620px; }
 .fundador__texto .fundador__piada { margin-top: 14px; font: 400 clamp(17px, 1.5vw, 21px)/1.35 var(--tron); color: var(--verde); text-shadow: 0 0 16px rgba(140, 255, 46, .55); }
@@ -404,7 +413,9 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
   margin-top: clamp(110px, 13vw, 170px);
   display: grid; grid-template-columns: 1fr minmax(320px, 440px); gap: clamp(30px, 5vw, 60px); align-items: center;
   padding: clamp(32px, 5vw, 64px); border-radius: 40px; color: var(--ink); isolation: isolate; overflow: hidden;
-  background: radial-gradient(60% 80% at 100% 0%, rgba(140, 255, 46, .13), transparent 60%), radial-gradient(50% 60% at 0% 100%, rgba(0, 255, 163, .08), transparent 60%), #000;
+  /* vidro escuro e translúcido (o preto chapado ficou pesado): deixa passar o brilho verde de trás */
+  background: radial-gradient(60% 80% at 100% 0%, rgba(140, 255, 46, .16), transparent 60%), radial-gradient(50% 60% at 0% 100%, rgba(0, 255, 163, .10), transparent 60%), rgba(18, 30, 20, .55);
+  -webkit-backdrop-filter: blur(22px) saturate(140%); backdrop-filter: blur(22px) saturate(140%);
   box-shadow: 0 0 0 1.5px var(--verde), 0 0 30px rgba(140, 255, 46, .5), 0 0 100px rgba(140, 255, 46, .18), inset 0 0 70px rgba(140, 255, 46, .07);
 }
 .distribuidor::before {
@@ -412,18 +423,22 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
   background-image: linear-gradient(rgba(140, 255, 46, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(140, 255, 46, .06) 1px, transparent 1px);
   background-size: 44px 44px; -webkit-mask: radial-gradient(80% 90% at 30% 50%, #000, transparent); mask: radial-gradient(80% 90% at 30% 50%, #000, transparent);
 }
+.distribuidor::after {
+  content: ""; position: absolute; z-index: -2; left: 50%; top: 50%; width: 70%; height: 80%; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(140, 255, 46, .16), transparent); filter: blur(40px); pointer-events: none;
+}
 .distribuidor h2 { font: 400 clamp(28px, 3.7vw, 54px)/1.1 var(--tron); text-transform: uppercase; letter-spacing: .01em; }
 .distribuidor h2 em { font-style: normal; color: var(--verde); text-shadow: 0 0 22px rgba(140, 255, 46, .7); }
 .distribuidor__texto p { margin-top: 18px; max-width: 460px; font-size: 18px; font-weight: 500; color: var(--muted); }
 .distribuidor__texto img { width: min(100%, 520px); margin-top: 26px; filter: drop-shadow(0 24px 40px rgba(140, 255, 46, .28)); }
 
-.form { position: relative; padding: 28px; border-radius: 28px; background: #030603; color: var(--ink); box-shadow: 0 0 0 1px rgba(140, 255, 46, .55), 0 0 22px rgba(140, 255, 46, .25), inset 0 0 40px rgba(140, 255, 46, .06); }
+.form { position: relative; padding: 28px; border-radius: 28px; background: rgba(255, 255, 255, .04); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: var(--ink); box-shadow: 0 0 0 1px rgba(140, 255, 46, .55), 0 0 22px rgba(140, 255, 46, .25), inset 0 0 40px rgba(140, 255, 46, .06); }
 .form h3 { font: 400 22px/1.1 var(--tron); text-transform: uppercase; margin-bottom: 18px; }
 .campo { display: block; margin-top: 14px; }
 .campo > span { display: block; font-size: 13.5px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
 .campo input, .campo select {
   width: 100%; height: 50px; padding: 0 16px; border-radius: 14px; font: 500 16px var(--inter); color: var(--ink);
-  background: #030603; border: 1px solid rgba(140, 255, 46, .42); outline: none; transition: border-color .3s, box-shadow .3s;
+  background: rgba(0, 0, 0, .28); border: 1px solid rgba(140, 255, 46, .42); outline: none; transition: border-color .3s, box-shadow .3s;
 }
 .campo select { appearance: none; padding-right: 30px; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) 22px, calc(100% - 13px) 22px; background-size: 5px 5px; background-repeat: no-repeat; }
 .campo input:focus, .campo select:focus { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(140, 255, 46, .22), 0 0 18px rgba(140, 255, 46, .5); }
@@ -473,11 +488,6 @@ kbd { font: 600 11px/1 var(--inter); padding: 3px 6px; border-radius: 6px; borde
 .credito { font-family: "Inter", sans-serif; }
 .credito a { color: var(--ink); font-weight: 700; }
 
-/* texto que se decifra (app.js) */
-.dc-pal { display: inline-block; white-space: nowrap; }
-.dc { display: inline-block; text-align: center; color: var(--verde); text-shadow: 0 0 12px rgba(140, 255, 46, .8); }
-.dc.ok { color: inherit; text-shadow: inherit; }
-.tl--2 .dc.ok { color: transparent; }
 
 /* ============ ABERTURA (ovni.js) ============ */
 html.abrindo body::after { content: ""; position: fixed; inset: 0; z-index: 300; background: #020604; }
@@ -524,7 +534,8 @@ html.abrindo body::after { content: ""; position: fixed; inset: 0; z-index: 300;
   .btn-link:hover svg { transform: translateX(4px); }
   .btn--verde:hover { box-shadow: 0 16px 44px -10px rgba(140, 255, 46, .95), inset 0 1px 0 rgba(255, 255, 255, .35); }
   .marca:hover { border-color: color-mix(in srgb, var(--c) 45%, transparent); }
-  a.marca:hover .marca__seta { transform: translateX(4px); }
+  a.marca:hover .marca__ir svg { transform: translateX(4px); }
+  .marca:hover .marca__arte img { transform: scale(1.06) rotate(-4deg); }
   .cartao:hover::after { box-shadow: inset 0 0 0 1.5px var(--verde), inset 0 0 30px rgba(140, 255, 46, .25); }
   .cartao:hover img { transform: scale(1.04); }
   .rede:hover .rede__seta { color: var(--verde); transform: translate(3px, -3px); }
@@ -538,18 +549,18 @@ html.abrindo body::after { content: ""; position: fixed; inset: 0; z-index: 300;
   .redes__grade { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 960px) {
-  .hero { grid-template-columns: 1fr; text-align: center; }
-  .hero__sub { margin-inline: auto; }
-  .hero__acoes { justify-content: center; }
   .hero__titulo { font-size: clamp(40px, 10.4vw, 96px); }
-  .palco { height: clamp(440px, 112vw, 640px); }
+  .palco { height: clamp(440px, 100vw, 600px); }
   .cab__nav, .cab__cta { display: none; }
   .cab__burger { display: grid; }
   .cab.preso .cab__in { width: min(100% - 24px, 420px); }
   .trajetoria, .bebidas, .meme, .mansao, .distribuidor, .fundador { grid-template-columns: 1fr; }
-  .fundador__foto { min-height: 0; aspect-ratio: 600 / 560; }
+  .fundador__foto { min-height: 0; }
+  .fundador__foto img { max-height: 420px; }
   .trajetoria__foto { position: relative; top: 0; max-width: 420px; }
-  .marcas__grade { grid-template-columns: 1fr; }
+  .marca { grid-template-columns: 1fr; min-height: 0; }
+  .marca__arte { order: -1; }
+  .marca__arte img { width: min(64%, 240px); }
   .bebidas__palco { order: -1; }
 
   .mansao__logo img { height: 320px; }
@@ -564,10 +575,8 @@ html.abrindo body::after { content: ""; position: fixed; inset: 0; z-index: 300;
   .numeros { margin-top: -24px; gap: 10px; }
   .numeros li { padding: 18px 16px; border-radius: 20px; }
   .numeros span { font-size: 13.5px; }
-  .marca { grid-template-columns: 64px 1fr; gap: 18px; padding: 22px; }
-  .marca__logo { height: 76px; }
-  .marca__ico { width: 64px; height: 64px; padding: 16px; border-radius: 20px; }
-  .marca__seta { display: none; }
+  .marca { padding: 26px 22px 30px; border-radius: 30px; }
+  .marca__num { margin-bottom: 14px; }
   .bebidas, .distribuidor { border-radius: 30px; padding: 24px 18px 28px; }
   .bebidas__palco { height: 380px; }
   .sabores button { height: 42px; padding: 0 14px 0 10px; font-size: 14px; }

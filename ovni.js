@@ -53,33 +53,106 @@ const perfil = (tipo) => {
   if (!cachePerfil.has(tipo)) cachePerfil.set(tipo, fetch(`assets/3d/${tipo}.json`).then((r) => r.json()));
   return cachePerfil.get(tipo);
 };
+/* topo da lata: a silhueta do render para na borda; daqui para cima a malha
+   faz a borda enrolada e desce até a tampa, que é uma peça à parte */
+const TAMPA_Y = .968;
 const cacheGeo = new Map();
 async function geometria(tipo) {
   if (!cacheGeo.has(tipo)) {
     cacheGeo.set(tipo, perfil(tipo).then((p) => {
       const pts = [new THREE.Vector2(0, 0)];
-      p.perfil.forEach(([r, h]) => pts.push(new THREE.Vector2(r, h)));
-      pts.push(new THREE.Vector2(0, 1));
+      if (tipo === 'lata') {
+        const corpo = p.perfil.filter(([, h]) => h <= .97);
+        corpo.forEach(([r, h]) => pts.push(new THREE.Vector2(r, h)));
+        const R = corpo[corpo.length - 1][0];
+        [[R + .004, .981], [R + .003, .993], [R - .003, .999], [R - .009, .996], [R - .013, .986], [R - .016, TAMPA_Y]]
+          .forEach(([r, h]) => pts.push(new THREE.Vector2(r, h)));
+        p.raioTampa = R - .016;
+      } else {
+        p.perfil.forEach(([r, h]) => pts.push(new THREE.Vector2(r, h)));
+        pts.push(new THREE.Vector2(0, 1));
+      }
       const g = new THREE.LatheGeometry(pts, 160);
+      /* o rótulo segue a ALTURA (não o índice do ponto): a borda e a tampa
+         pegam a faixa prateada do topo, sem esticar o desenho */
+      const pos = g.attributes.position, uv = g.attributes.uv;
+      for (let i = 0; i < uv.count; i++) uv.setY(i, Math.min(1, pos.getY(i)));
       g.translate(0, -.5, 0);
       g.computeVertexNormals();
-      return g;
+      return { geo: g, raioTampa: p.raioTampa };
     }));
   }
   return cacheGeo.get(tipo);
 }
 
+/* tampa de alumínio desenhada: friso, abertura marcada e rebite */
+let texTampa = null;
+function texturaTampa() {
+  if (texTampa) return texTampa;
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const g = c.getContext('2d'), m = 256;
+  const fundo = g.createRadialGradient(m - 60, m - 80, 20, m, m, 256);
+  fundo.addColorStop(0, '#f1f3f5'); fundo.addColorStop(.7, '#c9ced4'); fundo.addColorStop(1, '#9aa1a9');
+  g.fillStyle = fundo; g.fillRect(0, 0, 512, 512);
+  const anel = (r, cor, lw) => { g.beginPath(); g.arc(m, m, r, 0, Math.PI * 2); g.strokeStyle = cor; g.lineWidth = lw; g.stroke(); };
+  anel(232, 'rgba(40,44,50,.55)', 6); anel(224, 'rgba(255,255,255,.7)', 3); anel(244, 'rgba(255,255,255,.35)', 4);
+  /* abertura: gota voltada para a frente da lata (parte de baixo do desenho) */
+  const gota = () => {
+    g.beginPath();
+    g.moveTo(m - 70, m + 60);
+    g.quadraticCurveTo(m - 92, m + 168, m, m + 186);
+    g.quadraticCurveTo(m + 92, m + 168, m + 70, m + 60);
+    g.quadraticCurveTo(m, m + 34, m - 70, m + 60);
+    g.closePath();
+  };
+  gota(); g.fillStyle = 'rgba(120,128,138,.18)'; g.fill();
+  gota(); g.strokeStyle = 'rgba(30,34,40,.7)'; g.lineWidth = 4; g.stroke();
+  g.save(); g.translate(0, -3); gota(); g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; g.stroke(); g.restore();
+  /* rebite */
+  const rb = g.createRadialGradient(m - 6, m - 6, 2, m, m, 26);
+  rb.addColorStop(0, '#ffffff'); rb.addColorStop(1, '#8d949c');
+  g.beginPath(); g.arc(m, m, 24, 0, Math.PI * 2); g.fillStyle = rb; g.fill();
+  texTampa = new THREE.CanvasTexture(c); texTampa.colorSpace = THREE.SRGBColorSpace; texTampa.anisotropy = 8;
+  return texTampa;
+}
+function criaTampa(raio) {
+  const g = new THREE.Group();
+  const metal = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: texturaTampa(), metalness: .9, roughness: .3, clearcoat: .4, envMapIntensity: 1.1 });
+  const disco = new THREE.Mesh(new THREE.CircleGeometry(raio, 96), metal);
+  disco.rotation.x = -Math.PI / 2; g.add(disco);
+  /* lacre (anel de puxar): sai do rebite e aponta para trás, longe da abertura */
+  const L = raio * .62, W = raio * .42;
+  const forma = new THREE.Shape();
+  forma.moveTo(-W / 2, -W * .32);
+  forma.lineTo(W / 2, -W * .32);
+  forma.quadraticCurveTo(W * .62, L * .55, W * .34, L);
+  forma.lineTo(-W * .34, L);
+  forma.quadraticCurveTo(-W * .62, L * .55, -W / 2, -W * .32);
+  const furo = new THREE.Path();
+  furo.absellipse(0, L * .62, W * .27, L * .2, 0, Math.PI * 2, true);
+  forma.holes.push(furo);
+  const geoLacre = new THREE.ExtrudeGeometry(forma, { depth: raio * .025, bevelEnabled: true, bevelThickness: raio * .012, bevelSize: raio * .012, bevelSegments: 3, curveSegments: 24 });
+  const lacre = new THREE.Mesh(geoLacre, new THREE.MeshPhysicalMaterial({ color: 0xdfe3e8, metalness: 1, roughness: .22, clearcoat: .6, envMapIntensity: 1.25 }));
+  /* deitado sobre a tampa, um fio acima; +y do desenho vira -z (para trás) */
+  lacre.rotation.x = -Math.PI / 2; lacre.position.y = raio * .03; lacre.position.z = raio * .05;
+  g.add(lacre);
+  return g;
+}
+
 /* ---------- embalagem 3D (lata ou litro) com o rótulo oficial ---------- */
 async function criaEmbalagem(tipo, sabor) {
-  const [geo, tex] = await Promise.all([geometria(tipo), textura(`assets/3d/${tipo}-${sabor}.webp`)]);
+  const [{ geo, raioTampa }, tex] = await Promise.all([geometria(tipo), textura(`assets/3d/${tipo}-${sabor}.webp`)]);
+  /* alumínio impresso (lata) e PET com verniz (garrafa); a luz de verdade
+     vem das luzes do palco e do ambiente. Um fio de luz própria segura o
+     rótulo legível dentro do raio verde, sem achatar o volume. */
   const mat = tipo === 'lata'
-    ? new THREE.MeshPhysicalMaterial({ map: tex, metalness: .25, roughness: .24, clearcoat: .9, clearcoatRoughness: .12, envMapIntensity: 1.0 })
-    : new THREE.MeshPhysicalMaterial({ map: tex, metalness: .02, roughness: .2, clearcoat: 1, clearcoatRoughness: .06, envMapIntensity: .9 });
-  /* o rótulo tem luz própria: continua vivo dentro do raio verde e na sombra */
-  mat.emissive = new THREE.Color(0xffffff); mat.emissiveMap = tex; mat.emissiveIntensity = tipo === 'lata' ? .42 : .34;
+    ? new THREE.MeshPhysicalMaterial({ map: tex, metalness: .42, roughness: .3, clearcoat: .75, clearcoatRoughness: .16, envMapIntensity: .95 })
+    : new THREE.MeshPhysicalMaterial({ map: tex, metalness: .05, roughness: .22, clearcoat: 1, clearcoatRoughness: .08, envMapIntensity: .85 });
+  mat.emissive = new THREE.Color(0xffffff); mat.emissiveMap = tex; mat.emissiveIntensity = tipo === 'lata' ? .14 : .12;
   const malha = new THREE.Mesh(geo, mat);
   malha.rotation.y = -Math.PI / 2; /* a frente do rótulo olhando para a câmera */
   const g = new THREE.Group(); g.add(malha);
+  if (tipo === 'lata') { const t = criaTampa(raioTampa); t.position.y = TAMPA_Y - .5; g.add(t); }
   g.userData = { malha, tipo, sabor,
     async troca(novo) {
       if (novo === g.userData.sabor) return;
@@ -88,6 +161,25 @@ async function criaEmbalagem(tipo, sabor) {
     },
   };
   return g;
+}
+/* a embalagem balança mostrando a frente e nunca vira de costas (o verso
+   oficial não existe em render): ±BALANCO em torno da frente */
+const BALANCO = .5;
+const balanca = (t, vel, fase = 0) => Math.sin(t * vel + fase) * BALANCO;
+
+/* sombra de contato: mancha escura e macia sob a embalagem */
+let texSombra = null;
+function criaSombra() {
+  if (!texSombra) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d'), r = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    r.addColorStop(0, 'rgba(0,0,0,.85)'); r.addColorStop(.35, 'rgba(0,0,0,.5)'); r.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 256, 256);
+    texSombra = new THREE.CanvasTexture(c);
+  }
+  const s = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: texSombra, transparent: true, depthWrite: false, toneMapped: false }));
+  s.rotation.x = -Math.PI / 2;
+  return s;
 }
 
 /* ---------- o disco ---------- */
@@ -188,9 +280,14 @@ function criaPalco(canvas, fov = 30) {
   const pm = new THREE.PMREMGenerator(r);
   cena.environment = pm.fromScene(new RoomEnvironment(), .04).texture;
   const cam = new THREE.PerspectiveCamera(fov, 1, .1, 400); cam.position.set(0, 0, 12);
-  const chave = new THREE.DirectionalLight(0xffffff, 1.4); chave.position.set(4, 6, 8); cena.add(chave);
-  const verdeBaixo = new THREE.PointLight(VERDE, 40, 14); verdeBaixo.position.set(0, -1, 3); cena.add(verdeBaixo);
-  const menta = new THREE.DirectionalLight(MENTA, 1.1); menta.position.set(-7, 1, -2); cena.add(menta);
+  /* luz de estúdio de produto: chave macia do alto à esquerda, preenchimento
+     fraco do outro lado e dois recortes por trás que desenham as bordas do
+     cilindro (verde e menta, as cores da casa) */
+  const chave = new THREE.DirectionalLight(0xffffff, 2.1); chave.position.set(-5, 7, 9); cena.add(chave);
+  const preenche = new THREE.DirectionalLight(0xe8fff0, .55); preenche.position.set(7, 1, 6); cena.add(preenche);
+  const recorteE = new THREE.DirectionalLight(MENTA, 2.4); recorteE.position.set(-9, 2, -6); cena.add(recorteE);
+  const recorteD = new THREE.DirectionalLight(VERDE, 2.4); recorteD.position.set(9, 3, -6); cena.add(recorteD);
+  cena.add(new THREE.HemisphereLight(0xffffff, 0x0b1a0d, .35));
   const vis = { w: 1, h: 1 };
   const medir = () => {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
@@ -276,7 +373,7 @@ function abertura(alien, brilho) {
       const forca = t < 1.75 ? 0 : t < 2.15 ? easeOut((t - 1.75) / .4) : t < 2.95 ? 1 : 1 - clamp01((t - 2.95) / .25);
       ovni.feixe((o.position.y - .3 * s + h * .32) / s, forca);
       ovni.tick(t, dt);
-      if (t > 1.95 && !nome.classList.contains('on')) { nome.classList.add('on'); sub.classList.add('on'); window.dispatchEvent(new CustomEvent('decifra', { detail: nome })); }
+      if (t > 1.95 && !nome.classList.contains('on')) { nome.classList.add('on'); sub.classList.add('on'); }
       p.r.render(p.cena, p.cam);
       if (t >= DUR) fecha(false);
       if (!acabou || t < DUR + 1) pedido = requestAnimationFrame(quadro);
@@ -302,8 +399,10 @@ async function hero(alien, brilho, veioDaAbertura) {
   laco(palco, (t, dt) => {
     const { w, h } = p.vis;
     const estreito = w < h * .9;
-    /* tamanho de cada peça em função da altura visível */
-    const s = Math.min(1.05, (w * (estreito ? .58 : .5)) / 3.5);
+    /* palco largo e centralizado sob o texto: disco no alto, a lata no raio
+       e as outras duas ao lado, perto do centro (não nas pontas da tela) */
+    const lado = Math.min(w * (estreito ? .3 : .26), h * .62);
+    const s = Math.min(1.05, (w * (estreito ? .58 : .5)) / 3.5, h * .3);
     const alvoY = h / 2 - h * .17;
     const chegada = easeOut(clamp01(t / (veioDaAbertura ? 1.2 : 1.5)));
     sm.z = lerp(sm.z, -mouse.x * .2, .05); sm.x = lerp(sm.x, .1 + mouse.y * .07, .05);
@@ -321,15 +420,16 @@ async function hero(alien, brilho, veioDaAbertura) {
     const sobe = easeOut(clamp01((t - 1.1) / 1.4));
     latA.scale.setScalar(Ha);
     latA.position.set(sm.px * .6, lerp(-h * .55, -h * .07, sobe) + Math.sin(t * 1.3) * .1, .2);
-    latA.rotation.set(sm.gx + .06 * Math.sin(t * .9), t * .9, .1 * Math.sin(t * .7));
-    /* garrafa e lata da frente: flutuam, giram devagar e seguem o mouse */
+    /* balança mostrando a frente; inclinada para a câmera, deixa ver a tampa */
+    latA.rotation.set(.32 + sm.gx + .05 * Math.sin(t * .9), balanca(t, .8) + sm.gy * .5, .08 * Math.sin(t * .7));
+    /* garrafa e lata da frente: flutuam, balançam devagar e seguem o mouse */
     const entra = easeOut(clamp01((t - .4) / 1.2));
     litro.scale.setScalar(h * (estreito ? .36 : .42));
-    litro.position.set(-w * (estreito ? .3 : .31), lerp(-h, -h * .2, entra) + Math.sin(t * 1.1 + 1) * .12, 1.4);
-    litro.rotation.set(sm.gx, -.5 + t * .35 + sm.gy, .2);
+    litro.position.set(-lado, lerp(-h, -h * .2, entra) + Math.sin(t * 1.1 + 1) * .12, 1.4);
+    litro.rotation.set(.14 + sm.gx, .35 + balanca(t, .55, 1) * .7 + sm.gy, .16);
     latB.scale.setScalar(h * (estreito ? .27 : .3));
-    latB.position.set(w * (estreito ? .3 : .31), lerp(-h, -h * .26, entra) + Math.sin(t * 1.2 + 2) * .12, 1.8);
-    latB.rotation.set(sm.gx - .05, .6 - t * .45 + sm.gy, -.24);
+    latB.position.set(lado, lerp(-h, -h * .26, entra) + Math.sin(t * 1.2 + 2) * .12, 1.8);
+    latB.rotation.set(.36 + sm.gx, -.35 + balanca(t, .65, 2) * .7 + sm.gy, -.2);
     p.r.render(p.cena, p.cam);
   });
 }
@@ -344,35 +444,47 @@ async function seletor() {
   p.cam.position.set(0, .3, 12);
   const [lata, litro] = await Promise.all([criaEmbalagem('lata', 'original'), criaEmbalagem('litro', 'original')]);
   [lata, litro].forEach((o) => { vivo(o); p.cena.add(o); });
-  /* chão de luz na cor do sabor */
+  /* chão: sombra de contato escura sob cada peça + um brilho fraco na cor do sabor */
   const cor = new THREE.Color('#FF1F8E');
-  const chao = new THREE.Mesh(new THREE.CircleGeometry(1, 64), new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: .35, blending: THREE.AdditiveBlending, depthWrite: false }));
-  chao.rotation.x = -Math.PI / 2; p.cena.add(chao);
-  const luzCor = new THREE.PointLight(cor, 30, 12); luzCor.position.set(-2, -1, 3); p.cena.add(luzCor);
+  const brilhoChao = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: texturaBrilho(), color: cor, transparent: true, opacity: .3, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  brilhoChao.rotation.x = -Math.PI / 2; p.cena.add(brilhoChao);
+  const sombraLata = criaSombra(), sombraLitro = criaSombra();
+  p.cena.add(sombraLata, sombraLitro);
+  const luzCor = new THREE.PointLight(cor, 14, 12); luzCor.position.set(-3, -2, 4); p.cena.add(luzCor);
   sec.classList.add('com-3d');
   new ResizeObserver(() => p.medir()).observe(canvas);
-  let giro = 0, alvoCor = cor.clone();
+  let troca = 0, alvoCor = cor.clone();
   window.addEventListener('sabor', async (e) => {
     const { sabor, cor: c } = e.detail;
     alvoCor.set(c);
-    giro = 1; /* dá um giro completo enquanto troca o rótulo */
-    setTimeout(() => { lata.userData.troca(sabor); litro.userData.troca(sabor); }, 260);
+    /* troca de sabor: as peças viram de lado (o rótulo sai de cena), trocam
+       o rótulo e voltam de frente. Nunca mostram as costas. */
+    troca = 1;
+    setTimeout(() => { lata.userData.troca(sabor); litro.userData.troca(sabor); }, 300);
   });
   const sm = { y: 0, x: 0 };
   laco(sec, (t, dt) => {
     const { w, h } = p.vis;
-    giro = Math.max(0, giro - dt * 1.1);
-    const extra = easeInOut(1 - giro) * Math.PI * 2 * (giro > 0 ? 1 : 0);
-    sm.y = lerp(sm.y, mouse.x * .5, .06); sm.x = lerp(sm.x, mouse.y * .15, .06);
-    const Hl = h * .62;
+    troca = Math.max(0, troca - dt * 1.6);
+    const vira = Math.sin(Math.PI * (1 - troca)) * 1.15 * (troca > 0 ? 1 : 0);
+    sm.y = lerp(sm.y, mouse.x * .35, .06); sm.x = lerp(sm.x, mouse.y * .12, .06);
+    const Hl = h * .62, chaoY = -h * .05 - Hl / 2;
     lata.scale.setScalar(Hl);
-    lata.position.set(-w * .1, -h * .05 + Math.sin(t * 1.4) * .08, .6);
-    lata.rotation.set(sm.x, -.25 + sm.y + Math.sin(t * .6) * .25 + extra, -.06);
+    const flutuaLata = Math.sin(t * 1.4) * .06, flutuaLitro = Math.sin(t * 1.2 + 1) * .06;
+    lata.position.set(-w * .1, -h * .05 + .1 + flutuaLata, .6);
+    lata.rotation.set(.26 + sm.x, -.15 + sm.y + balanca(t, .6) * .6 + vira, -.04);
     litro.scale.setScalar(h * .74);
-    litro.position.set(w * .2, -h * .0 + Math.sin(t * 1.2 + 1) * .08, -1.2);
-    litro.rotation.set(sm.x * .6, .3 + sm.y * .6 - Math.sin(t * .5) * .2 - extra * .5, .08);
-    cor.lerp(alvoCor, .08); chao.material.color.copy(cor); luzCor.color.copy(cor);
-    chao.position.set(0, -h * .05 - Hl / 2 - .02, 0); chao.scale.setScalar(w * .42);
+    litro.position.set(w * .2, chaoY + h * .37 + .1 + flutuaLitro, -1.2);
+    litro.rotation.set(.1 + sm.x * .6, .25 + sm.y * .6 - balanca(t, .5, 1) * .4 - vira * .8, .05);
+    cor.lerp(alvoCor, .08); brilhoChao.material.color.copy(cor); luzCor.color.copy(cor);
+    brilhoChao.position.set(0, chaoY - .01, 0); brilhoChao.scale.setScalar(w * .36);
+    /* a sombra fica no chão e encolhe/clareia quando a peça sobe */
+    sombraLata.position.set(lata.position.x, chaoY, lata.position.z);
+    sombraLata.scale.set(Hl * .62 * (1 - flutuaLata * .8), Hl * .3, 1);
+    sombraLata.material.opacity = .75 - flutuaLata * 2;
+    sombraLitro.position.set(litro.position.x, chaoY, litro.position.z);
+    sombraLitro.scale.set(h * .74 * .46, h * .74 * .2, 1);
+    sombraLitro.material.opacity = .65 - flutuaLitro * 2;
     p.r.render(p.cena, p.cam);
   });
 }

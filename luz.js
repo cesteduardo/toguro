@@ -42,7 +42,8 @@
 
   /* inclinação 3D com reflexo (estilo "interactive tilt card"):
      o cartão gira até INCLINA graus na direção do cursor e volta macio */
-  const INCLINA = ['.marca', '.numeros li', '.rede', '.cartao', '.fundador'];
+  /* os cartões das empresas não inclinam: eles se empilham na rolagem (app.js) */
+  const INCLINA = ['.numeros li', '.rede', '.cartao', '.fundador'];
   const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fino = matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (!calmo && fino) {

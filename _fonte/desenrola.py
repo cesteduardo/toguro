@@ -1,7 +1,9 @@
 """Desenrola o rótulo de uma embalagem cilíndrica a partir do render oficial (vista frontal).
 
 Saídas por produto:
-  <nome>.webp  textura 360° (duas cópias da frente, como lata real com logo dos dois lados)
+  <nome>.webp  textura 360°: a frente oficial centrada em u=.25 (o site gira a malha para
+               ela olhar a câmera); o resto da volta é a cor da própria lata, linha a
+               linha, porque não existe render do verso. O site nunca mostra as costas.
   <nome>.json  perfil da silhueta: lista de [raio, altura] normalizados (altura 0..1, raio na mesma escala)
 
 Uso: python3 desenrola.py <render.jpg> <mascara.jpg> <saida_sem_ext> [theta_max_graus] [larg_textura]
@@ -47,28 +49,45 @@ HT = int(round(LT * altura / (2 * np.pi * np.nanmax(r_suave)) * 1.0))
 HT = max(256, min(HT, 2048))
 ys = np.linspace(y0, y1, HT)
 us = (np.arange(LT) + .5) / LT
-# duas cópias da frente: u em [0,.5) e [.5,1) varrem -TMAX..+TMAX
-fr = (us % .5) / .5
-theta = (fr - .5) * 2 * TMAX
+# a frente fica centrada em u=.25; theta em [-pi, pi)
+theta = ((us - .25 + .5) % 1.0 - .5) * 2 * np.pi
+frente = np.abs(theta) <= TMAX
 tex = np.zeros((HT, LT, 3), np.float32)
 for j, yf in enumerate(ys):
     yi = int(round(yf)); rr = r_suave[min(yi - y0, len(r_suave) - 1)]
     if not np.isfinite(rr) or rr < 1:
         continue
-    xf = centro + rr * np.sin(theta)
+    th = np.clip(theta, -TMAX, TMAX)
+    xf = centro + rr * np.sin(th)
     x0 = np.clip(np.floor(xf).astype(int), 0, W - 2); t = (xf - x0)[:, None]
     yy = min(max(yi, 0), H - 1)
     tex[j] = rgb[yy, x0] * (1 - t) + rgb[yy, x0 + 1] * t
 
 # --- tira a luz "assada" do render: as faixas verticais de brilho/sombra
-# são normalizadas pela mediana de cada coluna (força 85%)
+# são normalizadas pela mediana de cada coluna (força 85%), só na frente
 lum = tex.mean(axis=2)
 colmed = np.median(lum[int(HT * .12):int(HT * .88)], axis=0)
-alvo = np.median(colmed)
+alvo = np.median(colmed[frente])
 ganho = np.clip(alvo / np.maximum(colmed, 1), .55, 1.8)
 ganho = 1 + (ganho - 1) * .85
 ganho = np.convolve(np.pad(ganho, 8, mode='wrap'), np.ones(9) / 9, mode='same')[8:-8]
-tex = np.clip(tex * ganho[None, :, None], 0, 255).astype(np.uint8)
+ganho[~frente] = 1
+tex = tex * ganho[None, :, None]
+
+# --- o verso: cor da lata em cada linha (mediana de uma faixa logo dentro da borda
+# do render, dos dois lados), costurada à frente num degradê de 14 graus
+borda = (np.abs(theta) > TMAX - np.radians(14)) & (np.abs(theta) <= TMAX - np.radians(4))
+cor = np.median(tex[:, borda], axis=1)                     # (HT, 3)
+# mediana corrida na vertical: apaga os frisos/reflexos de cada linha sem borrar a
+# divisa entre tampa e corpo; depois um alisamento leve
+J = 25
+pad = np.pad(cor, ((J, J), (0, 0)), mode='edge')
+cor = np.stack([np.median(pad[i:i + 2 * J + 1], axis=0) for i in range(HT)])
+cor = np.stack([np.convolve(np.pad(cor[:, c], 4, mode='edge'), np.ones(9) / 9, mode='same')[4:-4] for c in range(3)], 1)
+costura = np.clip((np.abs(theta) - (TMAX - np.radians(14))) / np.radians(14), 0, 1)
+costura = costura * costura * (3 - 2 * costura)
+tex = tex * (1 - costura[None, :, None]) + cor[:, None, :] * costura[None, :, None]
+tex = np.clip(tex, 0, 255).astype(np.uint8)
 
 subprocess.run(['magick', '-size', f'{LT}x{HT}', '-depth', '8', 'rgb:-', '-quality', '86', saida + '.webp'], input=tex.tobytes(), check=True)
 
